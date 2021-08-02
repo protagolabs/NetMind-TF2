@@ -24,6 +24,10 @@ cd ./finetune
 
 python predata.py
 
-train: python train.py
+**train**: python train.py
 
-generate(test): python generate.py
+**generate(test)**: python generate.py
+
+## Acknowledgement ##
+[Huggingface Transformers](https://github.com/huggingface/transformers/blob/master/examples/tensorflow/language-modeling/run_clm.py)
+Thanks for my colleages Xiangpeng Wan and Yu Cheng for their kindly helps
