@@ -18,4 +18,4 @@ pip install tf-models-official
 
 
 ## finetune ##
-download train and <https://drive.google.com/file/d/1g107ztO3fyf2Y-wEaZ6JkgdgM4WGvNxy/view?usp=sharing>[valid] dataset in the directory ./finetune
+download train and [valid]<https://drive.google.com/file/d/1g107ztO3fyf2Y-wEaZ6JkgdgM4WGvNxy/view?usp=sharing> dataset in the directory ./finetune
