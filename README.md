@@ -5,11 +5,17 @@ This project is developed in tensorflow-gpu=2.5.0, cuda=11.2, and transformers==
 
 ## installation ##
 conda create --name xxx python=3.8
+
 pip install tensorflow-gpu==2.5.0
+
 conda install pandas
+
 conda install matplotlib
+
 pip install transformers
+
 pip install tf-models-official
 
 
 ## finetune ##
+download train and valid dataset in the directory ./finetune
