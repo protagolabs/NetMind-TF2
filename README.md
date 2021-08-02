@@ -30,5 +30,7 @@ python predata.py
 
 ## Acknowledgement ##
 [Huggingface Transformers Language Modeling](https://github.com/huggingface/transformers/blob/master/examples/tensorflow/language-modeling/run_clm.py)
+
 [Tensorflow Finetuning Bert](https://www.tensorflow.org/official_models/fine_tuning_bert) 
+
 Thanks for my colleages Xiangpeng Wan and Yu Cheng for their kindly helps
