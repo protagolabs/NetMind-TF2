@@ -18,4 +18,12 @@ pip install tf-models-official
 
 
 ## finetune ##
-download [train](https://drive.google.com/file/d/1urLZaI8NlnQwQsH_dKPItDWcSyFqw4oP/view?usp=sharing) and [valid](https://drive.google.com/file/d/1g107ztO3fyf2Y-wEaZ6JkgdgM4WGvNxy/view?usp=sharing) dataset in the directory ./finetune
+download [train](https://drive.google.com/file/d/1urLZaI8NlnQwQsH_dKPItDWcSyFqw4oP/view?usp=sharing) and [valid](https://drive.google.com/file/d/1g107ztO3fyf2Y-wEaZ6JkgdgM4WGvNxy/view?usp=sharing) dataset into the directory ./finetune
+
+cd ./finetune
+
+python predata.py
+
+train: python train.py
+
+generate(test): python generate.py
