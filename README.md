@@ -4,7 +4,9 @@ In this repo we develop a chatbot by pretraining/finetuning the GPT2 model in te
 This project is developed in tensorflow-gpu=2.5.0, cuda=11.2, and transformers==4.8.1
 
 ## installation ##
-conda create --name xxx python=3.8
+conda create --name xxx (the env name you wish) python=3.8
+
+conda activate xxx
 
 pip install tensorflow-gpu==2.5.0
 
