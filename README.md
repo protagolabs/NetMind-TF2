@@ -26,9 +26,11 @@ cd ./finetune
 
 python predata.py
 
-**train**: python train.py
+**train**: python train-tf2.py
 
-**generate(test)**: python generate.py
+**MultiWorkerMirroredStrategy train**: python train-tf2-mm.py
+
+**generate(test)**: python generate-tf2.py
 
 ## Acknowledgement ##
 [Huggingface Transformers Language Modeling](https://github.com/huggingface/transformers/blob/master/examples/tensorflow/language-modeling/run_clm.py)
