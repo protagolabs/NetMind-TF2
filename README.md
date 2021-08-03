@@ -24,7 +24,7 @@ download [train](https://drive.google.com/file/d/1urLZaI8NlnQwQsH_dKPItDWcSyFqw4
 
 cd ./finetune
 
-python predata.py
+**preparing data** python predata-tf2.py
 
 **train**: python train-tf2.py
 
