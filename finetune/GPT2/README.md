@@ -1,5 +1,5 @@
 # GPT2
-In this repo we develop a chatbot by finetuning the [GPT2 model](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf) in tensorflow 2.x
+In this repo we develop a chatbot by finetuning the [GPT2 model](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf) in tensorflow-2.x
 
 This project is developed in tensorflow-gpu=2.5.0, cuda=11.2, and transformers==4.8.1
 
