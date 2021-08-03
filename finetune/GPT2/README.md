@@ -1,4 +1,4 @@
-# GPT2-TF2
+# GPT2
 In this repo we develop a chatbot by finetuning the GPT2 model in tensorflow 2.x
 
 This project is developed in tensorflow-gpu=2.5.0, cuda=11.2, and transformers==4.8.1
