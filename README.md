@@ -28,7 +28,7 @@ cd ./finetune
 
 **train**: python train-tf2.py
 
-**MultiWorkerMirroredStrategy train**: python train-tf2-mm.py
+**multiworkermirroredstrategy distributed train**: python train-tf2-mm.py
 
 **generate(test)**: python generate-tf2.py
 
