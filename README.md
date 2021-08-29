@@ -20,17 +20,7 @@ pip install tf-models-official
 
 
 ## finetune ##
-download [train](https://drive.google.com/file/d/1urLZaI8NlnQwQsH_dKPItDWcSyFqw4oP/view?usp=sharing) and [valid](https://drive.google.com/file/d/1g107ztO3fyf2Y-wEaZ6JkgdgM4WGvNxy/view?usp=sharing) dataset into the directory ./finetune
-
-cd ./finetune
-
-**preparing data** python predata-tf2.py
-
-**train**: python train-tf2.py
-
-**multiworker-mirroredstrategy distributed train**: python train-tf2-mm.py
-
-**generate(test)**: python generate-tf2.py
+check the models in ./finetune
 
 ## Acknowledgement ##
 [Huggingface Transformers Language Modeling](https://github.com/huggingface/transformers/blob/master/examples/tensorflow/language-modeling/run_clm.py)
