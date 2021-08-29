@@ -10,7 +10,7 @@ download [train](https://drive.google.com/file/d/1urLZaI8NlnQwQsH_dKPItDWcSyFqw4
 
 **train**: python train-tf2.py
 
-**multiworker-mirroredstrategy distributed train**: python train-tf2-mm.py
+**multiworker-mirrored strategy distributed train**: python train-tf2-mm.py
 
 **generate(test)**: python generate-tf2.py
 
