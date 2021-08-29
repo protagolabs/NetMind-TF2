@@ -26,5 +26,5 @@ def build_text_files(src_path, dest_path):
     fs.close()
 
 
-build_text_files("../train.txt",'train_dataset.txt')
-build_text_files("../valid.txt",'test_dataset.txt')
+build_text_files("train.txt",'train_dataset.txt')
+build_text_files("valid.txt",'test_dataset.txt')
