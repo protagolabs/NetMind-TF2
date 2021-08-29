@@ -4,7 +4,7 @@ In this repo we develop a chatbot by finetuning the [GPT2 model](https://cdn.ope
 This project is developed in tensorflow-gpu=2.5.0, cuda=11.2, and transformers==4.8.1
 
 ## finetune ##
-download [train](https://drive.google.com/file/d/1urLZaI8NlnQwQsH_dKPItDWcSyFqw4oP/view?usp=sharing) and [valid](https://drive.google.com/file/d/1g107ztO3fyf2Y-wEaZ6JkgdgM4WGvNxy/view?usp=sharing) dataset
+download [train](https://drive.google.com/file/d/1urLZaI8NlnQwQsH_dKPItDWcSyFqw4oP/view?usp=sharing) and [valid](https://drive.google.com/file/d/1g107ztO3fyf2Y-wEaZ6JkgdgM4WGvNxy/view?usp=sharing) dataset. Put them in current GPT2 directory.
 
 **preparing data** python predata-tf2.py
 
