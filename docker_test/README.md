@@ -10,10 +10,12 @@ git clone this [github](https://github.com/protagolabs/NetMind-TF2)
 cd docker_test ( we assume docker_test is the $root directory in following )
 
 ## data ##
-download preprocessed [train](https://drive.google.com/file/d/1urLZaI8NlnQwQsH_dKPItDWcSyFqw4oP/view?usp=sharing) and [valid](https://drive.google.com/file/d/1g107ztO3fyf2Y-wEaZ6JkgdgM4WGvNxy/view?usp=sharing) dataset. Put them in $root directory.
+download preprocessed [train](https://drive.google.com/file/d/1BG7a3ByidHhtI0XVXJyV0pDXBPP87TS2/view?usp=sharing) and [valid](https://drive.google.com/file/d/1Qh6y8HjgG45CKmJKx-vFxaZzv5Ka-PNu/view?usp=sharing) dataset. Put them in $root directory.
 
 ## cudnn ##
 Download cuDNN v8.2.1 (June 7th, 2021) from [here](https://developer.nvidia.com/rdp/cudnn-archive) to $root directory.
+
+(If you meet difficulty for download the cudnn, please contact me privately.)
 
 tar -xzvf cudnn-11.3-linux-x64-v8.2.1.32.tgz
 
