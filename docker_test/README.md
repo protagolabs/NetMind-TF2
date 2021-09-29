@@ -31,6 +31,10 @@ the output training progress should be like the following figure.
 
 ![output image](0EA72A71-4E27-47D8-9ABD-8B6AA1D0DA3C.jpeg)
 
+## save for future use ##
+
+sudo docker save finetune_gpt2 > /save_root (as you wish)/finetune_gpt2.tar
+
 ## Acknowledgement ##
 
 Thanks for my colleages Xiangpeng Wan and Yu Cheng for their kindly helps
