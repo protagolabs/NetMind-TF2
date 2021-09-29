@@ -1,5 +1,5 @@
 # Finetune_GPT2_Chatbot in Docker
-In this repo we create a docker for a chatbot by finetuning the [GPT2 model](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf) in tensorflow-2.x
+In this repo we create a docker for finetuning the [GPT2 model](https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf) in tensorflow-2.x
 
 This project is developed in docker-20.10.7
 
