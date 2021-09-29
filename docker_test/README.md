@@ -5,13 +5,25 @@ This project is developed in docker-20.10.7
 
 ## preparing ##
 
-git clone https://github.com/protagolabs/NetMind-TF2.git
-cd docker_test
+git clone this [github](https://github.com/protagolabs/NetMind-TF2)
 
+cd docker_test ( we assume docker_test is the $root directory in following )
 
-## data preparing ##
-download [train](https://drive.google.com/file/d/1urLZaI8NlnQwQsH_dKPItDWcSyFqw4oP/view?usp=sharing) and [valid](https://drive.google.com/file/d/1g107ztO3fyf2Y-wEaZ6JkgdgM4WGvNxy/view?usp=sharing) dataset. Put them in docker_test directory.
+## data ##
+download preprocessed [train](https://drive.google.com/file/d/1urLZaI8NlnQwQsH_dKPItDWcSyFqw4oP/view?usp=sharing) and [valid](https://drive.google.com/file/d/1g107ztO3fyf2Y-wEaZ6JkgdgM4WGvNxy/view?usp=sharing) dataset. Put them in $root directory.
 
+## cudnn ##
+Download cuDNN v8.2.1 (June 7th, 2021) from [here](https://developer.nvidia.com/rdp/cudnn-archive) to $root directory.
+
+tar -xzvf cudnn-11.3-linux-x64-v8.2.1.32.tgz
+
+## build ##
+
+sudo docker build -f Dockerfile -t finetune_gpt2 .
+
+## run docker ##
+
+sudo docker run --runtime=nvidia -ti finetune_gpt2 /bin/bash -c "source activate ml && cd src && python train-tf2.py"
 
 
 ## Acknowledgement ##
