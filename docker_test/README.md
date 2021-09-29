@@ -26,6 +26,7 @@ sudo docker build -f Dockerfile -t finetune_gpt2 .
 sudo docker run --runtime=nvidia -ti finetune_gpt2 /bin/bash -c "source activate ml && cd src && python train-tf2.py"
 
 the output training progress should be like the following figure.
+
 ![output image](0EA72A71-4E27-47D8-9ABD-8B6AA1D0DA3C.jpeg)
 
 ## Acknowledgement ##
