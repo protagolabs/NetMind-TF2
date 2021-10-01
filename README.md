@@ -1,5 +1,5 @@
 # NetMind-Models-TF2
-In this repo we develop the netmind platform in tensorflow 2.x
+In this repo we develop the netmind platform in tensorflow 2
 
 This different categories could be found in corresponding directory: pretrain, finetune, etc..
 
