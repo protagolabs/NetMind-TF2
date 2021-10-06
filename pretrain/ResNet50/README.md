@@ -5,3 +5,5 @@ we meet the result in [Deep Residual Learning for Image Recognition](https://arx
 The result on ImageNet-1k is:
 
 top-1 Accuracy: 75.80%, top-5 Accuracy: 92.95%
+
+The pretrained model can be download from this [link](https://drive.google.com/file/d/1IUXl5O4r7LvmDAZ0D_9M4WApE47T0C3c/view?usp=sharing)
