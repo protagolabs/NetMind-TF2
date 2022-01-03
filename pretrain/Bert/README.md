@@ -13,10 +13,10 @@ please run the bash files in the directory **glue_eval**
 
 ## Result  ##
 
-| GLUE | CoLA | SST-2 |
-|-------------|-------------|-----|
-| HF official| right-aligned | $1600 |
-| ours      | centered      |   $12 |
+| GLUE       | CoLA | SST-2 | 
+|------------|------|-------|
+| HF official| 56.53| 92.32 |
+| ours       | 50.15| 90.60 |
 
 
 
