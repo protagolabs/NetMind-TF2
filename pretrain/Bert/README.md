@@ -13,8 +13,8 @@ please run the bash files in the directory **glue_eval**
 
 ## Result 
 
-GLUE | #CoLA | #2 | #3 | #4 | #5 | #6 | #7 | #8 | #9 | #10 | #11
-HF official | 56.53 | --- | --- |--- |--- |--- |--- |--- |--- |--- |---
+GLUE | CoLA | SST-2 | MRPC | STS-B | QQP | MNLI | QNLI | RTE | WNLI 
+--- | --- | --- | --- |--- |--- |--- |--- |--- |--- |--- |---
 ours | 50.15 | 283 | 290 | 286 | 289 | 285 | 287 | 287 | 272 | 276 | 269
 
 CoLA (Matthews corr)|SST-2 (Accuracy)|MRPC (F1/Accuracy)	STS-B (Pearson/Spearman corr.)	QQP (Accuracy/F1)	MNLI (Mached acc./Mismatched acc.)	QNLI (Accuracy)	RTE (Accuracy)	WNLI (Accuracy)
