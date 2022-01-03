@@ -9,7 +9,9 @@ python train.py
 
 ## evaluation ##
 
-[ToDo]
+please run the bash files in the directory glue_eval 
+
+## Result 
 
 ## Acknowledgement ##
 [Huggingface Transformers Language Modeling](https://github.com/huggingface/transformers/blob/master/examples/tensorflow/language-modeling/run_mlm.py)
