@@ -15,8 +15,11 @@ please run the bash files in the directory **glue_eval**
 
 Colons can be used to align columns.
 
-| GLUE | CoLA | SST-2 | MRPC | STS-B | QQP | MNLI | QNLI | RTE | WNLI |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Tables        | Are           | Cool  |
+| ------------- |:-------------:| -----:|
+| col 3 is      | right-aligned | $1600 |
+| col 2 is      | centered      |   $12 |
+| zebra stripes | are neat      |    $1 |
 
 
 | GLUE | CoLA | SST-2 | MRPC | STS-B | QQP | MNLI | QNLI | RTE | WNLI |
