@@ -13,8 +13,6 @@ please run the bash files in the directory **glue_eval**
 
 ## Result  ##
 
-Colons can be used to align columns.
-
 | GLUE | CoLA | SST-2 |
 |-------------|-------------|-----|
 | HF official| right-aligned | $1600 |
