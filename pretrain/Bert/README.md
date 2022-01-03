@@ -1,5 +1,5 @@
 # Bert
-In this repo we develop the pretraining for [Bert](https://arxiv.org/abs/1810.04805). We use the huggingface transofmers with Tensorflow 2.
+In this repo we pretrain [Bert](https://arxiv.org/abs/1810.04805) by using the huggingface transofmers with Tensorflow 2.
 
 We use [wikipedia](https://huggingface.co/datasets/wikipedia) and [bookcorpus](https://huggingface.co/datasets/bookcorpus) for training this model and evaluate the results on [GLUE](https://gluebenchmark.com/).
 
