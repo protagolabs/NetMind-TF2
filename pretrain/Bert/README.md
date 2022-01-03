@@ -14,8 +14,8 @@ please run the bash files in the directory **glue_eval**
 ## Result 
 
 CoLA | SST-2 |  | MRPC | MNLI | QNLI | RTE | WNLI 
---- | --- | --- | --- |--- |--- |--- |--- |--- |--- |--- |---
-Seconds | 301 | 283 | 290 | 286 | 289 | 285 | 287 | 287 | 272 | 276 | 269
+--- | --- | --- | --- |--- |--- |--- |--- |---
+Seconds | 301 | 283 | 290 | 286 | 289 | 285 | 287 | 287 
 
 CoLA (Matthews corr)|SST-2 (Accuracy)|MRPC (F1/Accuracy)	STS-B (Pearson/Spearman corr.)	QQP (Accuracy/F1)	MNLI (Mached acc./Mismatched acc.)	QNLI (Accuracy)	RTE (Accuracy)	WNLI (Accuracy)
 
