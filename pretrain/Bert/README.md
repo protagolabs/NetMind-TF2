@@ -13,8 +13,10 @@ please run the bash files in the directory **glue_eval**
 
 ## Result 
 
-CoLA (Matthews corr)	SST-2 (Accuracy)	MRPC (F1/Accuracy)	STS-B (Pearson/Spearman corr.)	QQP (Accuracy/F1)	MNLI (Mached acc./Mismatched acc.)	QNLI (Accuracy)	RTE (Accuracy)	WNLI (Accuracy)	
-56.53	92.32	89.47/85.29	88.64/88.48	90.71/87.49 83.91	      90.66	65.7	56.34	
+CoLA (Matthews corr)	SST-2 (Accuracy)	MRPC (F1/Accuracy)	STS-B (Pearson/Spearman corr.)	QQP (Accuracy/F1)	MNLI (Mached acc./Mismatched acc.)	QNLI (Accuracy)	RTE (Accuracy)	WNLI (Accuracy)
+
+56.53	92.32	89.47/85.29	88.64/88.48	90.71/87.49 83.91	      90.66	65.7	56.34
+
 50.15	90.60	87.77/83.82	88.21/87.93	90.02/86.65	80.79/79.61	88.88	63.17	56.33
 
 
