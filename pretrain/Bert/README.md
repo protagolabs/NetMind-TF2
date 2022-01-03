@@ -13,7 +13,7 @@ please run the bash files in the directory **glue_eval**
 
 ## Result  ##
 
-| GLUE | CoLA | SST-2 | MRPC | STS-B | QQP | MNLI | QNLI | RTE | WNLI | //
+| GLUE | CoLA | SST-2 | MRPC | STS-B | QQP | MNLI | QNLI | RTE | WNLI |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
 
