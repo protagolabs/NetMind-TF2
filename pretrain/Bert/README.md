@@ -13,10 +13,10 @@ please run the bash files in the directory **glue_eval**
 
 ## Result  ##
 
-| GLUE       | CoLA | SST-2 | 
-|------------|------|-------|
-| HF official| 56.53| 92.32 |
-| ours       | 50.15| 90.60 |
+| GLUE       | CoLA | SST-2 | MRPC     |
+|------------|------|-------|------    |
+| HF official| 56.53| 92.32 |89.47/85.29|
+| ours       | 50.15| 90.60 |87.77/83.82|
 
 
 
