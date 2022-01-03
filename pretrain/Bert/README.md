@@ -1,13 +1,13 @@
-# Bert
+# Intro
 In this repo we pretrain [Bert](https://arxiv.org/abs/1810.04805) by using the huggingface transofmers with Tensorflow 2.
 
 We use [wikipedia](https://huggingface.co/datasets/wikipedia) and [bookcorpus](https://huggingface.co/datasets/bookcorpus) for training this model and evaluate the results on [GLUE](https://gluebenchmark.com/).
 
-## training ##
+## Training ##
 
 python **train.py**
 
-## evaluation ##
+## Evaluation ##
 
 please run the bash files in the directory **glue_eval** 
 
