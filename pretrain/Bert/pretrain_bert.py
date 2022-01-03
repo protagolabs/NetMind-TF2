@@ -1,4 +1,3 @@
-from os import makedirs
 from transformers import AutoTokenizer, AutoConfig
 import tensorflow as tf
 import datasets
@@ -7,10 +6,8 @@ from transformers import create_optimizer, TFAutoModelForMaskedLM
 from functools import partial
 import numpy as np
 import logging
-import math
-from sklearn.model_selection import train_test_split
 import random
-
+from datetime import datetime
 import transformers
 
 
@@ -21,23 +18,32 @@ class SavePretrainedCallback(tf.keras.callbacks.Callback):
     def __init__(self, output_dir, **kwargs):
         super().__init__()
         self.output_dir = output_dir
+        self.epoch = 0
 
-    def on_epoch_end(self, epoch, logs={}):
-        self.model.save_pretrained(self.output_dir+"/checkpoint_epoch{}".format(epoch))
-        
-    # def on_step_end(self, savesteps, logs={}):
-    #     self.model.save_pretrained(self.output_dir+"/checkpoint_iteration{}".format(savesteps))
+
+    def on_epoch_end(self, epoch, logs=None):
+        self.epoch += 1
+        # self.model.save_pretrained(self.output_dir+"/checkpoint_epoch{}".format(epoch))
+
+    def on_train_batch_end(self, batch, logs=None):
+        if batch % 10000 == 0:
+            self.model.save_pretrained(self.output_dir+"/checkpoint_epoch{}_iteration{}".format(self.epoch, batch))
+
+
 
 
 # region Data generator
 def sample_generator(dataset, tokenizer, mlm_probability=0.15, pad_to_multiple_of=None):
+    # time_start = time.time()
     if tokenizer.mask_token is None:
         raise ValueError("This tokenizer does not have a mask token which is necessary for masked language modeling. ")
     # Trim off the last partial batch if present
     sample_ordering = np.random.permutation(len(dataset))
+
     for sample_idx in sample_ordering:
         example = dataset[int(sample_idx)]
         # Handle dicts with proper padding and conversion to tensor.
+
         example = tokenizer.pad(example, return_tensors="np", pad_to_multiple_of=pad_to_multiple_of)
         special_tokens_mask = example.pop("special_tokens_mask", None)
         example["input_ids"], example["labels"] = mask_tokens(
@@ -48,7 +54,9 @@ def sample_generator(dataset, tokenizer, mlm_probability=0.15, pad_to_multiple_o
         example = {key: tf.convert_to_tensor(arr) for key, arr in example.items()}
 
         yield example, example["labels"]  # TF needs some kind of labels, even if we don't use them
+
     return
+
 
 def mask_tokens(inputs, mlm_probability, tokenizer, special_tokens_mask):
     """
@@ -75,16 +83,16 @@ def mask_tokens(inputs, mlm_probability, tokenizer, special_tokens_mask):
     # The rest of the time (10% of the time) we keep the masked input tokens unchanged
     return inputs, labels
 
-#### tokenizer ####
 
-logger = logging.getLogger(__name__)
 
-# region Setup logging
-# accelerator.is_local_main_process is only True for one process per machine.
-logger.setLevel(logging.INFO)
-datasets.utils.logging.set_verbosity_warning()
-transformers.utils.logging.set_verbosity_info()
-# endregion
+
+logdir = "logs/bert_scalars/" + datetime.now().strftime("%Y%m%d-%H%M%S")
+tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=logdir, 
+                                                    histogram_freq=1,
+                                                    profile_batch=0,
+                                                    update_freq=10000)
+
+
 
 
 
@@ -93,11 +101,10 @@ transformers.utils.logging.set_verbosity_info()
 max_seq_length=512 # 1024? 512?
 preprocessing_num_workers = 128
 overwrite_cache = True
-# validation_split_percentage = 0.1
 checkpoint = None
 config_name = "bert-base-uncased"
 tokenizer_name = "bert-base-uncased"
-model_name_or_path = "bert-base-uncased"
+model_name_or_path = None # for training from scratch
 
 # #### dataloader ####
 bookcorpus = datasets.load_dataset('bookcorpus')
@@ -110,6 +117,7 @@ print(bookcorpus)
 
 raw_datasets = datasets.concatenate_datasets([bookcorpus['train'],wikipedia['train']])
 
+print(raw_datasets)
 
 # region Load pretrained model and tokenizer
 #
@@ -122,7 +130,7 @@ elif config_name:
 elif model_name_or_path:
     config = AutoConfig.from_pretrained(model_name_or_path)
 else:
-    logger.warning("You are using unknown config.")
+    print("You are using unknown config.")
 
 if tokenizer_name:
     tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
@@ -138,18 +146,18 @@ else:
 
 column_names = raw_datasets.column_names
 text_column_name = "text" if "text" in column_names else column_names[0]
-
+print(text_column_name)
 if max_seq_length is None:
     max_seq_length = tokenizer.model_max_length
     if max_seq_length > 1024:
-        logger.warning(
+        print(
             f"The tokenizer picked seems to have a very large `model_max_length` ({tokenizer.model_max_length}). "
             "Picking 1024 instead. You can reduce that default value by passing --max_seq_length xxx."
         )
         max_seq_length = 1024
 else:
     if max_seq_length > tokenizer.model_max_length:
-        logger.warning(
+        print(
             f"The max_seq_length passed ({max_seq_length}) is larger than the maximum length for the"
             f"model ({tokenizer.model_max_length}). Using max_seq_length={tokenizer.model_max_length}."
         )
@@ -161,15 +169,15 @@ def tokenize_function(examples):
     # return tokenizer(examples[text_column_name], return_special_tokens_mask=True, max_length=max_seq_length, truncation=True)
     # return tokenizer(examples[text_column_name])
 
-print(column_names)
-# tokenized_datasets = raw_datasets.map(
-#     tokenize_function,
-#     batched=True,
-#     num_proc=preprocessing_num_workers,
-#     remove_columns=column_names,
-#     load_from_cache_file=not overwrite_cache,
-#     desc="Running tokenizer on every text in dataset",
-# )
+
+tokenized_datasets = raw_datasets.map(
+    tokenize_function,
+    batched=True,
+    num_proc=preprocessing_num_workers,
+    remove_columns=column_names,
+    load_from_cache_file=not overwrite_cache,
+    desc="Running tokenizer on every text in dataset",
+)
 
 
 def group_texts(examples):
@@ -187,20 +195,24 @@ def group_texts(examples):
     }
     return result
 
-# tokenized_datasets = tokenized_datasets.map(
-#     group_texts,
-#     batched=True,
-#     num_proc=preprocessing_num_workers,
-#     load_from_cache_file=not overwrite_cache,
-#     desc=f"Grouping texts in chunks of {max_seq_length}",
-# )
+tokenized_datasets = tokenized_datasets.map(
+    group_texts,
+    batched=True,
+    num_proc=preprocessing_num_workers,
+    load_from_cache_file=not overwrite_cache,
+    desc=f"Grouping texts in chunks of {max_seq_length}",
+)
 
-tokenized_datasets = datasets.load_from_disk("./data_bert")
-# tokenized_datasets.save_to_disk("./data_bert")
+
+#### you can save/load the preprocessed data here ###
+
+
+# tokenized_datasets = datasets.load_from_disk("./data_bert")
+tokenized_datasets.save_to_disk("./data_bert")
 
 train_dataset = tokenized_datasets
+print(train_dataset)
 
-# # should I use this ?
 # train_indices, val_indices = train_test_split(
 #     list(range(len(train_dataset))), test_size=validation_split_percentage / 100
 # )
@@ -210,32 +222,28 @@ train_dataset = tokenized_datasets
 
 # Log a few random samples from the training set:
 for index in random.sample(range(len(train_dataset)), 3):
-    logger.info(f"Sample {index} of the training set: {train_dataset[index]}.")
+    print(f"Sample {index} of the training set: {train_dataset[index]}.")
 # endregion
 
 
-per_device_train_batch_size = 12
-# # per_device_eval_batch_size = 4
-num_train_epochs = 5
+per_device_train_batch_size = 16
+num_train_epochs = 6
 learning_rate = 0.0001
 warmup_proportion = 0.1
 
-adam_beta1 = 0.5
-adam_beta2 = 0.5
-adam_epsilon = 1e-07
-weight_decay = 0.9999
-output_dir = "./saved_model"
+weight_decay = 1e-7
+output_dir = "./bert_saved_model_ep6"
 
 
 with tf.distribute.MirroredStrategy().scope():
 
-    # region Prepare model
+    # # region Prepare model
     if checkpoint is not None:
         model = TFAutoModelForMaskedLM.from_pretrained(checkpoint, config=config)
     elif model_name_or_path:
         model = TFAutoModelForMaskedLM.from_pretrained(model_name_or_path, config=config)
     else:
-        logger.info("Training new model from scratch")
+        print("Training new model from scratch")
         model = TFAutoModelForMaskedLM.from_config(config)
 
     model.resize_token_embeddings(len(tokenizer))
@@ -259,19 +267,6 @@ with tf.distribute.MirroredStrategy().scope():
         .batch(batch_size=num_replicas * per_device_train_batch_size, drop_remainder=True)
         .repeat(int(num_train_epochs))
     )
-    # eval_generator = partial(sample_generator, eval_dataset, tokenizer)
-    # eval_signature = {
-    #     feature: tf.TensorSpec(shape=(None,), dtype=tf.int64)
-    #     for feature in eval_dataset.features
-    #     if feature != "special_tokens_mask"
-    # }
-    # eval_signature["labels"] = eval_signature["input_ids"]
-    # eval_signature = (eval_signature, eval_signature["labels"])
-    # tf_eval_dataset = (
-    #     tf.data.Dataset.from_generator(eval_generator, output_signature=eval_signature)
-    #     .with_options(options)
-    #     .batch(batch_size=num_replicas * per_device_eval_batch_size, drop_remainder=True)
-    # )
     # endregion
 
 
@@ -279,13 +274,20 @@ with tf.distribute.MirroredStrategy().scope():
     # region Optimizer and loss
     batches_per_epoch = len(train_dataset) // (num_replicas * per_device_train_batch_size)
     # Bias and layernorm weights are automatically excluded from the decay
+    # optimizer, lr_schedule = create_optimizer(
+    #     init_lr=learning_rate,
+    #     num_train_steps=int(num_train_epochs * batches_per_epoch),
+    #     num_warmup_steps=int(warmup_proportion * num_train_epochs * batches_per_epoch),
+    #     adam_beta1=adam_beta1,
+    #     adam_beta2=adam_beta2,
+    #     adam_epsilon=adam_epsilon,
+    #     weight_decay_rate=weight_decay,
+    # )
+
     optimizer, lr_schedule = create_optimizer(
         init_lr=learning_rate,
         num_train_steps=int(num_train_epochs * batches_per_epoch),
         num_warmup_steps=int(warmup_proportion * num_train_epochs * batches_per_epoch),
-        adam_beta1=adam_beta1,
-        adam_beta2=adam_beta2,
-        adam_epsilon=adam_epsilon,
         weight_decay_rate=weight_decay,
     )
 
@@ -296,33 +298,16 @@ with tf.distribute.MirroredStrategy().scope():
     # endregion
 
 
-    # region Training and validation
-    logger.info("***** Running training *****")
-    logger.info(f"  Num examples = {len(train_dataset)}")
-    logger.info(f"  Num Epochs = {num_train_epochs}")
-    logger.info(f"  Instantaneous batch size per device = {per_device_train_batch_size}")
-    logger.info(f"  Total train batch size = {per_device_train_batch_size * num_replicas}")
+    # region Training
 
     history = model.fit(
         tf_train_dataset,
         # validation_data=tf_eval_dataset,
         epochs=int(num_train_epochs),
         steps_per_epoch=len(train_dataset) // (per_device_train_batch_size * num_replicas),
-        callbacks=[SavePretrainedCallback(output_dir=output_dir)],
+        callbacks=[SavePretrainedCallback(output_dir=output_dir),tensorboard_callback],
     )
-    # try:
-    #     train_perplexity = math.exp(history.history["loss"][-1])
-    # except OverflowError:
-    #     train_perplexity = math.inf
-    # try:
-    #     validation_perplexity = math.exp(history.history["val_loss"][-1])
-    # except OverflowError:
-    #     validation_perplexity = math.inf
-    # logger.warning(f"  Final train loss: {history.history['loss'][-1]:.3f}")
-    # logger.warning(f"  Final train perplexity: {train_perplexity:.3f}")
-    # logger.warning(f"  Final validation loss: {history.history['val_loss'][-1]:.3f}")
-    # logger.warning(f"  Final validation perplexity: {validation_perplexity:.3f}")
-    # endregion
+
 
     if output_dir is not None:
         model.save_pretrained(output_dir)
