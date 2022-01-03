@@ -5,11 +5,11 @@ We use [wikipedia](https://huggingface.co/datasets/wikipedia) and [bookcorpus](h
 
 ## training ##
 
-python train.py
+python **train.py**
 
 ## evaluation ##
 
-please run the bash files in the directory glue_eval 
+please run the bash files in the directory **glue_eval** 
 
 ## Result 
 
