@@ -1,7 +1,11 @@
 # Intro
-In this repo we pretrain [Bert](https://arxiv.org/abs/1810.04805) by using the huggingface transofmers with Tensorflow 2.
+In this repo we pretrain [Roberta](https://arxiv.org/abs/1907.11692) by using the huggingface transofmers with Tensorflow 2.
 
 We use [wikipedia](https://huggingface.co/datasets/wikipedia) and [bookcorpus](https://huggingface.co/datasets/bookcorpus) for training this model and evaluate the results on [GLUE](https://gluebenchmark.com/).
+
+## Preprocessing ##
+
+python **predata.py**
 
 ## Training ##
 
@@ -9,14 +13,14 @@ python **train.py**
 
 ## Evaluation ##
 
-please run the bash files in the directory **glue_eval** 
+please run the bash files in the directory **run_glue_*.sh** 
 
 ## Result  ##
 
-| GLUE       | CoLA | SST-2 | MRPC     | STS-B      | QQP       | MNLI      | QNLI | RTE | WNLI  |
-|------------|------|-------|------    | ----       |---        |---        | ---  | --- | ---   |
-| HF official| 56.53| 92.32 |89.47/85.29|88.64/88.48|90.71/87.49|83.91      | 90.66| 65.7| 56.34 |
-| ours       | 50.15| 90.60 |87.77/83.82|88.21/87.93|90.02/86.65|80.78/79.61| 88.88|63.17| 56.33 |
+| GLUE       | CoLA | SST-2 | MRPC     | STS-B      | QQP       | MNLI      | QNLI | RTE  | WNLI  |
+|------------|------|-------|------    | ----       |---        |---        | ---  | ---  | ---   |
+| official   | 63.6 | 94.8  | 90.2     |91.2        |91.9       |87.6       | 92.8 | 78.7 | - |
+| ours       | 62.34| 91.39 |87.92     |87.65       |87.35      |78.5       | 86.54| 64.25| - |
 
 
 
