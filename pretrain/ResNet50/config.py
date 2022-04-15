@@ -25,8 +25,8 @@ save_weight_file = 'result/weight/ResNet_50.h5'
 # Dataset config
 train_list_path = 'data/train_label.txt'
 test_list_path = 'data/validation_label.txt'
-train_data_path = '/data/imagenet/raw-data/train/'
-test_data_path = '/data/imagenet/raw-data/val/'
+train_data_path = '/home/xing/datasets/imagenet/train/'
+test_data_path = '/home/xing/datasets/imagenet/val/'
 
 # Augmentation config
 # From 'Bag of tricks for image classification with convolutional neural networks'
