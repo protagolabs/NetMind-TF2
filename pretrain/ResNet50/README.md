@@ -7,5 +7,6 @@ The result on ImageNet-1k is:
 |ImageNet-1k|top-1 | top-5|
 |---        |---   |---   |
 |   single GPU        |75.80 |92.95 |
+| distributed (2 GPUS) | |
 
 The pretrained model can be download from this [link](https://drive.google.com/file/d/1IUXl5O4r7LvmDAZ0D_9M4WApE47T0C3c/view?usp=sharing)
