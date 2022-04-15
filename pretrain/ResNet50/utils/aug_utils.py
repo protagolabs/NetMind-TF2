@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-import config_vit as c
+import config as c
 
 """
 |------|
