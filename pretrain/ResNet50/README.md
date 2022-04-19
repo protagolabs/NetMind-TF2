@@ -1,4 +1,4 @@
-This repo is developing for pretraining ResNet50
+This repo is for pretraining ResNet50 on [Imagenet-1K](https://image-net.org/)
 
 we meet the result in [Deep Residual Learning for Image Recognition](https://arxiv.org/abs/1512.03385)
 
