@@ -6,6 +6,8 @@ The result on ImageNet-1k is:
 
 |ImageNet-1k|top-1 | top-5|
 |---        |---   |---   |
+|      single GPU     |75.80 |92.95 |
+|      Multi-GPU(2 gpus)     |TBD |TBD |
 
 
 The pretrained weights and training results could be found in ./result 
