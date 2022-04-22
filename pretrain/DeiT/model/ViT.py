@@ -151,7 +151,7 @@ class ViT(tf.keras.Model):
 
         
         shapes = tf.shape(img)
-        # print(img)
+        print(img.shape)
         x = self.rearrange(img)
         x = self.patch_to_embedding(x)
 

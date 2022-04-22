@@ -19,7 +19,7 @@ minimum_learning_rate = 0.0001
 epoch_num = 50
 
 log_file = 'result/log/ResNet_50.txt'
-load_weight_file = None
+load_weight_file = 'result/weight/ResNet_50.h5'
 save_weight_file = 'result/weight/ResNet_50.h5'
 
 # Dataset config

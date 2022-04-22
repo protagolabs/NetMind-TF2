@@ -1,9 +1,10 @@
 import tensorflow as tf
-import numpy as np
 import os
+import config as c
 import cv2
 from utils.aug_utils import *
-import random
+
+import datasets
 
 def load_list(list_path, image_root_path):
     images = []
@@ -14,17 +15,6 @@ def load_list(list_path, image_root_path):
             images.append(os.path.join(image_root_path, line[0]))
             labels.append(int(line[1]))
 
-    # indx = np.random.choice(len(images),3,False)
-
-    # print(images[:5000])
-    # pairs = list(zip(images, labels))
-    # pairs = random.sample(pairs, 5000)
-    # images, labels = zip(*pairs)
-
-    # images = images[:c.train_num]
-    # labels = labels[:c.train_num]
-    # print(images)
-    # print(labels)
     return images, labels
 
 def load_image(image_path, label, augment=False, crop_10=False):
@@ -51,10 +41,18 @@ def load_image(image_path, label, augment=False, crop_10=False):
 
     image = normalize(image)
 
+    # image = np.moveaxis(image, -1, 0) # you may want to change the dimension order
+
     label_one_hot = np.zeros(c.category_num)
     label_one_hot[label] = 1.0
 
     return image, label_one_hot
+
+# basic processing (only resizing)
+def process(examples, feature_extractor):
+    # print(examples['img'])
+    examples.update(feature_extractor(examples['img'], ))
+    return examples
 
 def train_iterator(list_path=c.train_list_path):
     images, labels = load_list(list_path, c.train_data_path)
@@ -63,7 +61,7 @@ def train_iterator(list_path=c.train_list_path):
     dataset = dataset.repeat()
     dataset = dataset.map(lambda x, y: tf.py_function(load_image, inp=[x, y, True, False], Tout=[tf.float32, tf.float32]),
                           num_parallel_calls=tf.data.experimental.AUTOTUNE)
-    dataset = dataset.batch(c.batch_size, drop_remainder=True)
+    dataset = dataset.batch(c.batch_size)
     it = dataset.__iter__()
     return it
 
@@ -84,13 +82,15 @@ def test_10_crop_iterator(list_path=c.test_list_path):
     it = dataset.__iter__()
     return it
 
-if __name__ == '__main__':
-    # Annotate the 'normalize' function for visualization
-    # it = train_iterator()
-    it = test_10_crop_iterator('../data/validation_label.txt')
-    images, labels = it.next()
-    # print(np.shape(images), np.shape(labels))
-    for i in range(10):
-        print(np.where(labels[i].numpy() != 0))
-        cv2.imshow('show', images[i].numpy().astype(np.uint8))
-        cv2.waitKey(0)
+
+
+# if __name__ == '__main__':
+#     # Annotate the 'normalize' function for visualization
+#     # it = train_iterator()
+#     it = test_10_crop_iterator('../data/validation_label.txt')
+#     images, labels = it.next()
+#     # print(np.shape(images), np.shape(labels))
+#     for i in range(10):
+#         print(np.where(labels[i].numpy() != 0))
+#         cv2.imshow('show', images[i].numpy().astype(np.uint8))
+#         cv2.waitKey(0)
