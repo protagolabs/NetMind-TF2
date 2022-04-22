@@ -1,6 +1,8 @@
 import os
 import tensorflow as tf
 import config as c
+
+
 from tqdm import tqdm
 from tensorflow.keras import optimizers
 from utils.data_utils import train_iterator
@@ -8,7 +10,7 @@ from utils.eval_utils import cross_entropy_batch, correct_num_batch
 from model.ViT import ViT
 from test import test
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '0'
+# os.environ['CUDA_VISIBLE_DEVICES'] = '0'
 
 class CosineDecayWithWarmUP(tf.keras.experimental.CosineDecay):
     def __init__(self, initial_learning_rate, decay_steps, alpha=0.0, warm_up_step=0, name=None):
@@ -61,20 +63,21 @@ if __name__ == '__main__':
     train_data_iterator = train_iterator()
 
     model_config = {"image_size":224,
-                "patch_size":16,
-                "num_classes":1000,
-                "dim":384,
-                "depth":12,
-                "heads":6,
-                "mlp_dim":1024,
-                "hidden_layer_shape": 1536}
+                    "patch_size":16,
+                    "num_classes":1000,
+                    "dim":384,
+                    "depth":12,
+                    "heads":6,
+                    "mlp_dim":1024,
+                    "hidden_layer_shape": 1526}
 
-    # get model
+
     model = ViT(**model_config)
+
 
     # show
     model.build(input_shape=(None,) + c.input_shape)
-    model.summary()
+    print(model.summary())
 
     # load pretrain
     if c.load_weight_file is not None:
@@ -86,6 +89,7 @@ if __name__ == '__main__':
                                                     alpha=c.minimum_learning_rate,
                                                     warm_up_step=c.warm_iterations)
     optimizer = optimizers.SGD(learning_rate=learning_rate_schedules, momentum=0.9)
+
     for epoch_num in range(c.epoch_num):
         with open(c.log_file, 'a') as f:
             f.write('epoch:{}\n'.format(epoch_num))
