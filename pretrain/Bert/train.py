@@ -1,14 +1,14 @@
 from transformers import AutoTokenizer, AutoConfig
 import tensorflow as tf
 import datasets
-from datasets import load_dataset
+# from datasets import load_dataset
 from transformers import create_optimizer, TFAutoModelForMaskedLM
 from functools import partial
 import numpy as np
-import logging
+# import logging
 import random
 from datetime import datetime
-import transformers
+# import transformers
 
 
 class SavePretrainedCallback(tf.keras.callbacks.Callback):
@@ -106,18 +106,18 @@ config_name = "bert-base-uncased"
 tokenizer_name = "bert-base-uncased"
 model_name_or_path = None # for training from scratch
 
-# #### dataloader ####
-bookcorpus = datasets.load_dataset('bookcorpus')
-wikipedia = datasets.load_dataset('wikipedia','20200501.en')
+# # #### dataloader ####
+# bookcorpus = datasets.load_dataset('bookcorpus')
+# # wikipedia = datasets.load_dataset('wikipedia','20200501.en')
+# wikipedia = datasets.load_dataset('wikipedia','20220301.en')
+# wikipedia = wikipedia.remove_columns('title')
 
-wikipedia = wikipedia.remove_columns('title')
+# print(wikipedia)
+# print(bookcorpus)
 
-print(wikipedia)
-print(bookcorpus)
-
-raw_datasets = datasets.concatenate_datasets([bookcorpus['train'],wikipedia['train']])
-
-print(raw_datasets)
+# # raw_datasets = datasets.concatenate_datasets([bookcorpus['train'],wikipedia['train']])
+# raw_datasets = bookcorpus['train']
+# print(raw_datasets)
 
 # region Load pretrained model and tokenizer
 #
@@ -144,9 +144,9 @@ else:
 # endregion
 
 
-column_names = raw_datasets.column_names
-text_column_name = "text" if "text" in column_names else column_names[0]
-print(text_column_name)
+# column_names = raw_datasets.column_names
+# text_column_name = "text" if "text" in column_names else column_names[0]
+# print(text_column_name)
 if max_seq_length is None:
     max_seq_length = tokenizer.model_max_length
     if max_seq_length > 1024:
@@ -170,14 +170,14 @@ def tokenize_function(examples):
     # return tokenizer(examples[text_column_name])
 
 
-tokenized_datasets = raw_datasets.map(
-    tokenize_function,
-    batched=True,
-    num_proc=preprocessing_num_workers,
-    remove_columns=column_names,
-    load_from_cache_file=not overwrite_cache,
-    desc="Running tokenizer on every text in dataset",
-)
+# tokenized_datasets = raw_datasets.map(
+#     tokenize_function,
+#     batched=True,
+#     num_proc=preprocessing_num_workers,
+#     remove_columns=column_names,
+#     load_from_cache_file=not overwrite_cache,
+#     desc="Running tokenizer on every text in dataset",
+# )
 
 
 def group_texts(examples):
@@ -195,20 +195,20 @@ def group_texts(examples):
     }
     return result
 
-tokenized_datasets = tokenized_datasets.map(
-    group_texts,
-    batched=True,
-    num_proc=preprocessing_num_workers,
-    load_from_cache_file=not overwrite_cache,
-    desc=f"Grouping texts in chunks of {max_seq_length}",
-)
+# tokenized_datasets = tokenized_datasets.map(
+#     group_texts,
+#     batched=True,
+#     num_proc=preprocessing_num_workers,
+#     load_from_cache_file=not overwrite_cache,
+#     desc=f"Grouping texts in chunks of {max_seq_length}",
+# )
 
 
 #### you can save/load the preprocessed data here ###
 
 
-# tokenized_datasets = datasets.load_from_disk("./data_bert")
-tokenized_datasets.save_to_disk("./data_bert")
+tokenized_datasets = datasets.load_from_disk("./data_bert")
+# tokenized_datasets.save_to_disk("./data_bert")
 
 train_dataset = tokenized_datasets
 print(train_dataset)
