@@ -18,8 +18,8 @@ wikipedia = wikipedia.remove_columns('title')
 print(wikipedia)
 print(bookcorpus)
 
-# raw_datasets = datasets.concatenate_datasets([bookcorpus['train'],wikipedia['train']])
-raw_datasets = bookcorpus['train']
+raw_datasets = datasets.concatenate_datasets([bookcorpus['train'],wikipedia['train']])
+# raw_datasets = bookcorpus['train']
 print(raw_datasets)
 
 

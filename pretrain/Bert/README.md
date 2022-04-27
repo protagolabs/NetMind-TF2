@@ -3,6 +3,11 @@ In this repo we pretrain [Bert](https://arxiv.org/abs/1810.04805) by using the h
 
 We use [wikipedia](https://huggingface.co/datasets/wikipedia) and [bookcorpus](https://huggingface.co/datasets/bookcorpus) for training this model and evaluate the results on [GLUE](https://gluebenchmark.com/).
 
+
+## Data preparing ##
+
+python **predata.py**
+
 ## Training ##
 
 python **train.py**
