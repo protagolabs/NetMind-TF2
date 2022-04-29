@@ -8,6 +8,8 @@ We use [wikipedia](https://huggingface.co/datasets/wikipedia) and [bookcorpus](h
 
 python **predata.py**
 
+after running this (it takes for a while), you will see there a new dataset directory named as "data_bert".
+
 ## Training ##
 
 python **train.py**
