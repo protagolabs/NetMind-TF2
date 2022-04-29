@@ -164,8 +164,8 @@ else:
     max_seq_length = min(max_seq_length, tokenizer.model_max_length)
     
     # should I truncate or keep the remaining?
-def tokenize_function(examples):
-    return tokenizer(examples[text_column_name], return_special_tokens_mask=True)
+# def tokenize_function(examples):
+#     return tokenizer(examples[text_column_name], return_special_tokens_mask=True)
     # return tokenizer(examples[text_column_name], return_special_tokens_mask=True, max_length=max_seq_length, truncation=True)
     # return tokenizer(examples[text_column_name])
 
@@ -180,20 +180,20 @@ def tokenize_function(examples):
 # )
 
 
-def group_texts(examples):
-    # Concatenate all texts.
-    concatenated_examples = {k: sum(examples[k], []) for k in examples.keys()}
-    total_length = len(concatenated_examples[list(examples.keys())[0]])
-    # We drop the small remainder, we could add padding if the model supported it instead of this drop, you can
-    # customize this part to your needs.
-    if total_length >= max_seq_length:
-        total_length = (total_length // max_seq_length) * max_seq_length
-    # Split by chunks of max_len.
-    result = {
-        k: [t[i : i + max_seq_length] for i in range(0, total_length, max_seq_length)]
-        for k, t in concatenated_examples.items()
-    }
-    return result
+# def group_texts(examples):
+#     # Concatenate all texts.
+#     concatenated_examples = {k: sum(examples[k], []) for k in examples.keys()}
+#     total_length = len(concatenated_examples[list(examples.keys())[0]])
+#     # We drop the small remainder, we could add padding if the model supported it instead of this drop, you can
+#     # customize this part to your needs.
+#     if total_length >= max_seq_length:
+#         total_length = (total_length // max_seq_length) * max_seq_length
+#     # Split by chunks of max_len.
+#     result = {
+#         k: [t[i : i + max_seq_length] for i in range(0, total_length, max_seq_length)]
+#         for k, t in concatenated_examples.items()
+#     }
+#     return result
 
 # tokenized_datasets = tokenized_datasets.map(
 #     group_texts,
@@ -221,8 +221,8 @@ print(train_dataset)
 # train_dataset = train_dataset.select(train_indices)
 
 # Log a few random samples from the training set:
-for index in random.sample(range(len(train_dataset)), 3):
-    print(f"Sample {index} of the training set: {train_dataset[index]}.")
+# for index in random.sample(range(len(train_dataset)), 3):
+#     print(f"Sample {index} of the training set: {train_dataset[index]}.")
 # endregion
 
 
