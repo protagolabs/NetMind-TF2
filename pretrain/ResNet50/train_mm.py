@@ -82,8 +82,8 @@ def test_step(dist_inputs):
 
 if __name__ == '__main__':
 
-
-    mirrored_strategy = tf.distribute.MirroredStrategy(["GPU:0", "GPU:1", "GPU:2", "GPU:3"])
+    mirrored_strategy = tf.distribute.MirroredStrategy()
+    # mirrored_strategy = tf.distribute.MirroredStrategy(["GPU:0", "GPU:1", "GPU:2", "GPU:3"])
     # mirrored_strategy = tf.distribute.OneDeviceStrategy(device="GPU:0")
 
 
