@@ -18,6 +18,8 @@ For training on one single gpu on one node, please run the script：
 ```
 python train.py
 ```
+The pretrained weights and training results could be found in ./result 
+
 
 For training on multi-gpus on one node with trainer , please run the script：
 ```
@@ -37,4 +39,3 @@ The result on ImageNet-1k is:
 |      Multi-GPU(4 gpus)     |TBD |TBD|
 
 
-The pretrained weights and training results could be found in ./result 
