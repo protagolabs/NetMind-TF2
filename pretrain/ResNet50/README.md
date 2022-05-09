@@ -2,11 +2,13 @@ This repo is for pretraining ResNet50 on [Imagenet-1K](https://image-net.org/)
 
 ## 1. data preparing ##
 
-**1 please download the train and val datasets from [Imagenet-1K](https://image-net.org/) （you may need to create an account to access the dataset, or check the local disk）
+1. please download the train and val datasets from [Imagenet-1K](https://image-net.org/) （you may need to create an account to access the dataset, or check the local disk）
 
-**2 after download the datasets (ILSVRC2012_img_train.tar and ILSVRC2012_img_val.tar), please run the scripts as 
+2. after download the datasets (ILSVRC2012_img_train.tar and ILSVRC2012_img_val.tar), please run the scripts as 
 
+'''python
 bash extract_ILSVRC.sh
+'''
 
 we meet the result in [Deep Residual Learning for Image Recognition](https://arxiv.org/abs/1512.03385)
 
