@@ -6,7 +6,7 @@ from tqdm import tqdm
 from utils.data_utils_mm import train_iterator, test_iterator
 from utils.eval_utils import cross_entropy_batch, correct_num_batch, l2_loss
 from model.ResNet import ResNet
-# from model.resnet import ResNetTypeII
+
 
 
 physical_devices = tf.config.list_physical_devices('GPU') 
@@ -138,7 +138,7 @@ if __name__ == '__main__':
         model.compile(
             optimizer=optimizer,
             loss=tf.losses.CategoricalCrossentropy(from_logits=False, label_smoothing=c.label_smoothing),
-            # metrics=tf.keras.metrics.CategoricalAccuracy()
+            metrics=tf.keras.metrics.CategoricalAccuracy()
         )
 
 
@@ -152,12 +152,12 @@ if __name__ == '__main__':
     #     print(train_step(inputs))
     #     # train_step(inputs)
     # train_iterator = train_iterator.map(set_input_shape)
-    dataset_train = train_iterator().batch(global_batch_size)
+    dataset_train = train_iterator().batch(global_batch_size, drop_remainder=True)
     train_data_iterator = mirrored_strategy.experimental_distribute_dataset(dataset_train)
 
 
     #  eval
-    dataset_eval = test_iterator().batch(global_batch_size)
+    dataset_eval = test_iterator().batch(global_batch_size, drop_remainder=False)
     test_data_iterator = mirrored_strategy.experimental_distribute_dataset(dataset_eval)
 
     tensorboard_callback = tf.keras.callbacks.TensorBoard(
@@ -172,14 +172,31 @@ if __name__ == '__main__':
         embeddings_metadata=None,
     )
 
-    model.fit(
+    model_callback = tf.keras.callbacks.ModelCheckpoint(
+        filepath='tb_logs/resnet50/checkpoints/', 
+        monitor='evaluation_categorical_accuracy_vs_iterations',
+        verbose=0,
+        save_best_only=False,
+        save_weights_only=False,
+        mode="max",
+        save_freq="epoch",
+    )
+
+    history = model.fit(
         train_data_iterator,
         validation_data=test_data_iterator,
         steps_per_epoch= c.train_num  // global_batch_size , 
         validation_steps= c.test_num // global_batch_size ,
         epochs=c.epoch_num,
-        callbacks=tensorboard_callback
+        callbacks=[model_callback,tensorboard_callback]
     )
 
-
+    # #plot the training history
+    # plt.plot(history.history['loss'], label='Training Loss')
+    # plt.plot(history.history['val_loss'], label='Validation Loss')
+    # plt.legend()
+    # plt.xlabel('Epochs')
+    # plt.ylabel('Mean Squared Error')
+    # plt.savefig('model_training_history')
+    # plt.show()
 
