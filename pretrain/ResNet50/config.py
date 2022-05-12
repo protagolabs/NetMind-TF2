@@ -10,7 +10,8 @@ train_num = 1281167
 test_num = 50000
 # test_num = 5000
 iterations_per_epoch = int(train_num / batch_size)
-test_iterations = int(test_num / batch_size) + 1
+test_iterations = int(test_num / batch_size)
+# test_iterations = int(test_num / batch_size) + 1
 warm_iterations = iterations_per_epoch
 
 initial_learning_rate = 0.05
@@ -18,9 +19,9 @@ initial_learning_rate = 0.05
 minimum_learning_rate = 0.0001
 epoch_num = 50
 
-log_file = 'result/log/ResNet_50.txt'
-load_weight_file = 'result/weight/ResNet_50.h5'
-save_weight_file = 'result/weight/ResNet_50.h5'
+log_file = 'result/log/ResNet_50_mm.txt'
+load_weight_file = None
+save_weight_file = 'result/weight/ResNet_50_mm.h5'
 
 # Dataset config
 train_list_path = 'data/train_label.txt'

@@ -1,10 +1,12 @@
 import os
+from unicodedata import name
 import tensorflow as tf
 import config as c
 from tqdm import tqdm
 from utils.data_utils_mm import train_iterator, test_iterator
 from utils.eval_utils import cross_entropy_batch, correct_num_batch, l2_loss
 from model.ResNet import ResNet
+
 
 
 physical_devices = tf.config.list_physical_devices('GPU') 
@@ -44,11 +46,9 @@ def train_step(dist_inputs):
 
         with tf.GradientTape() as tape:
             prediction = model(images)
-            # ce = cross_entropy_batch(labels, prediction, label_smoothing=c.label_smoothing)
-            ce = tf.keras.losses.categorical_crossentropy(labels, prediction, label_smoothing=c.label_smoothing)
+            ce = cross_entropy_batch(labels, prediction, label_smoothing=c.label_smoothing)
             l2 = l2_loss(model)
-            # loss = ce + l2
-            loss = ce
+            loss = ce + l2
 
             grads = tape.gradient(loss, model.trainable_variables)
             optimizer.apply_gradients(list(zip(grads, model.trainable_variables)))
@@ -104,14 +104,23 @@ if __name__ == '__main__':
 
     with mirrored_strategy.scope():
 
-        model = ResNet(50)
+        # model = ResNet(50)
+        # model = ResNetTypeII(layer_params=[3, 4, 6, 3], input_shape=c.input_shape)
 
-        model.build(input_shape=(None,) + c.input_shape)
+        # model.build(input_shape=(None,) + c.input_shape)
         
-        model.summary()
+        # model.summary()
+        # print('initial l2 loss:{:.4f}'.format(l2_loss(model)))
 
         inputs = tf.keras.Input(shape=c.input_shape)
 
+        outputs = tf.keras.applications.ResNet50(  # Add the rest of the model
+            weights=None, input_shape=c.input_shape, classes=c.category_num
+        )(inputs)
+
+        model = tf.keras.Model(inputs, outputs)
+
+        model.summary()
 
         # load pretrain
         if c.load_weight_file is not None:
@@ -126,6 +135,11 @@ if __name__ == '__main__':
 
         optimizer = tf.keras.optimizers.SGD(learning_rate=learning_rate_schedules, momentum=0.9)
 
+        model.compile(
+            optimizer=optimizer,
+            loss=tf.losses.CategoricalCrossentropy(from_logits=False, label_smoothing=c.label_smoothing),
+            metrics=tf.keras.metrics.CategoricalAccuracy()
+        )
 
 
     
@@ -138,55 +152,51 @@ if __name__ == '__main__':
     #     print(train_step(inputs))
     #     # train_step(inputs)
     # train_iterator = train_iterator.map(set_input_shape)
-    dataset_train = train_iterator().batch(global_batch_size)
-    train_data_iterator = iter(mirrored_strategy.experimental_distribute_dataset(dataset_train))
+    dataset_train = train_iterator().batch(global_batch_size, drop_remainder=True)
+    train_data_iterator = mirrored_strategy.experimental_distribute_dataset(dataset_train)
 
 
     #  eval
-    dataset_eval = test_iterator().batch(global_batch_size)
-    test_data_iterator = iter(mirrored_strategy.experimental_distribute_dataset(dataset_eval))
+    dataset_eval = test_iterator().batch(global_batch_size, drop_remainder=False)
+    test_data_iterator = mirrored_strategy.experimental_distribute_dataset(dataset_eval)
 
+    tensorboard_callback = tf.keras.callbacks.TensorBoard(
+        log_dir="tb_logs/resnet50",
+        histogram_freq=0,
+        write_graph=True,
+        write_images=False,
+        write_steps_per_second=False,
+        update_freq="epoch",
+        profile_batch=0,
+        embeddings_freq=0,
+        embeddings_metadata=None,
+    )
 
-    with open(c.log_file, 'a') as f:
+    model_callback = tf.keras.callbacks.ModelCheckpoint(
+        filepath='tb_logs/resnet50/checkpoints/', 
+        monitor='evaluation_categorical_accuracy_vs_iterations',
+        verbose=0,
+        save_best_only=False,
+        save_weights_only=False,
+        mode="max",
+        save_freq="epoch",
+    )
 
-        for epoch_num in range(c.epoch_num):
+    history = model.fit(
+        train_data_iterator,
+        validation_data=test_data_iterator,
+        steps_per_epoch= c.train_num  // global_batch_size , 
+        validation_steps= c.test_num // global_batch_size ,
+        epochs=c.epoch_num,
+        callbacks=[model_callback,tensorboard_callback]
+    )
 
-            # train 
-            sum_ce = 0
-            for i in tqdm(range(int(c.train_num // global_batch_size))):
-            # for ds in train_data_iterator:
-                ds = train_data_iterator.get_next()
-                # print(ds)
-                loss_ce = train_step(ds)
-                sum_ce += tf.reduce_sum(loss_ce)
-                
-                # print(loss_ce)
-                # print('ce: {:.4f}'.format(tf.reduce_mean(loss_ce)))
-            print('train: cross entropy loss: {:.4f}\n'.format(sum_ce / c.train_num))
-            f.write('train: cross entropy loss: {:.4f}\n'.format(sum_ce / c.train_num))
-
-            # validate
-            sum_ce = 0
-            sum_correct_num = 0
-            for i in tqdm(range(int(c.test_num // global_batch_size))):
-            # for ds in test_data_iterator:
-                ds = test_data_iterator.get_next()
-                ce, correct_num = test_step(ds)
-                sum_ce += tf.reduce_sum(ce)
-                sum_correct_num +=  tf.reduce_sum(correct_num)
-
-            print('test: cross entropy loss: {:.4f}, accuracy: {:.4f}\n'.format(sum_ce / c.test_num, sum_correct_num / c.test_num))
-            f.write('test: cross entropy loss: {:.4f}, accuracy: {:.4f}\n'.format(sum_ce / c.test_num, sum_correct_num / c.test_num))
-
-
-            model.save_weights(c.save_weight_file, save_format='h5')
-
-            # save intermediate results
-            if epoch_num % 5 == 4:
-                os.system('cp {} {}_epoch_{}.h5'.format(c.save_weight_file, c.save_weight_file.split('.')[0], epoch_num))
-
-"""In the example above, we iterated over the `dist_dataset` to provide input to your training. We also provide the  `tf.distribute.Strategy.make_experimental_numpy_dataset` to support numpy inputs. You can use this API to create a dataset before calling `tf.distribute.Strategy.experimental_distribute_dataset`.
-Another way of iterating over your data is to explicitly use iterators. You may want to do this when you want to run for a given number of steps as opposed to iterating over the entire dataset.
-The above iteration would now be modified to first create an iterator and then explicity call `next` on it to get the input data.
-"""
+    # #plot the training history
+    # plt.plot(history.history['loss'], label='Training Loss')
+    # plt.plot(history.history['val_loss'], label='Validation Loss')
+    # plt.legend()
+    # plt.xlabel('Epochs')
+    # plt.ylabel('Mean Squared Error')
+    # plt.savefig('model_training_history')
+    # plt.show()
 
