@@ -29,6 +29,7 @@ export PATH=/home/xing/miniconda3/envs/netmind-tf2/lib:${PATH:+:${PATH}}
 export LD_LIBRARY_PATH=/home/xing/miniconda3/envs/netmind-tf2/lib:${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
 
 # load again
-
+```
 source ~/.bashrc
 conda activate netmind-tf2
+```
