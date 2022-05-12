@@ -14,23 +14,23 @@ bash extract_ILSVRC.sh
 
 ## Training and Evaluating ##
 
-For training on one single gpu on one node, please run the script：
+*For training on one single gpu on one node, please run the script：
 ```
 python train.py
 ```
 The pretrained weights and training results could be found in ./result 
 
-For training on multi-gpus on one node with eager mode , please run the script：
+*For training on multi-gpus on one node with eager mode , please run the script：
 ```
 python train_mm.py
 ```
 
-For training on multi-gpus on one node with trainer , please run the script：
+*For training on multi-gpus on one node with trainer , please run the script：
 ```
 python train_trainer.py
 ```
 
-* when running the trainer, the training sometimes is stucked at the end of epoch. will fix it later 
+** when running the trainer, the training sometimes is stucked at the end of epoch. will fix it later 
 
 
 ## Result ##
