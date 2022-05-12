@@ -30,7 +30,7 @@ For training on multi-gpus on one node with trainer , please run the script：
 python train_trainer.py
 ```
 
-### when running the trainer, the training sometimes is stucked at the end of epoch. will fix it later 
+* when running the trainer, the training sometimes is stucked at the end of epoch. will fix it later 
 
 
 ## Result ##
