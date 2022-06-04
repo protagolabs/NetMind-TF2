@@ -1,3 +1,4 @@
+import os
 # Training config
 category_num = 1000
 batch_size = 128
@@ -60,3 +61,7 @@ block_num = {18: (2, 2, 2, 2),
              152: (3, 4, 36, 3)}
 
 filter_num = (64, 128, 256, 512)
+
+save_steps = 5000
+local_rank = os.getenv('LOCAL_RANK', -1)
+
