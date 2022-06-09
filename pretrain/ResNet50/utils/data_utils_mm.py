@@ -20,7 +20,11 @@ def load_image(image_path, label, augment=False, crop_10=False):
     In test, the standard 10-crop test [1] is provided for fair comparison.
     [1] K. He, X. Zhang, S. Ren, and J. Sun. Deep residual learning for image recognition. In CVPR, 2016.
     """
-    image = cv2.imread(image_path.numpy().decode()).astype(np.float32)
+    try:
+        image = cv2.imread(image_path.numpy().decode()).astype(np.float32)
+    except:
+        #print(f"imread failed, path:{image_path}")
+        raise Exception(f"imread failed, path:{image_path}")
 
     if augment:
         image = random_aspect(image)

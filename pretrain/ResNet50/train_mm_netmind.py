@@ -1,4 +1,5 @@
 import os
+import traceback
 import tensorflow as tf
 import config as c
 from tqdm import tqdm
@@ -23,11 +24,13 @@ class CosineDecayWithWarmUP(tf.keras.experimental.CosineDecay):
 
     @tf.function
     def __call__(self, step):
+        print(f"step : {step} , self.warm_up_step : {self.warm_up_step}")
         if step <= self.warm_up_step:
+            #ret = step / self.warm_up_step * self.initial_learning_rate
             return tf.cast(step / self.warm_up_step * self.initial_learning_rate, tf.float32)
         else:
+            print("wrong......")
             return super(CosineDecayWithWarmUP, self).__call__(step - self.warm_up_step)
-
 
 '''
 we define one step of the training. We will use `tf.GradientTape` to compute gradients and optimizer to apply those gradients to 
@@ -48,14 +51,19 @@ def train_step(dist_inputs):
             l2 = l2_loss(model)
             # loss = ce + l2
             loss = ce
-
+            print(f"loss : {loss}")
             grads = tape.gradient(loss, model.trainable_variables)
             optimizer.apply_gradients(list(zip(grads, model.trainable_variables)))
             return ce, l2
-
+    
     per_replica_ce, per_replica_l2 = mirrored_strategy.run(step_fn, args=(dist_inputs,))
-    # mean_loss = mirrored_strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_losses, axis=None)
+    #mean_loss = mirrored_strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_losses, axis=None)
+    #mean_loss = mirrored_strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_ce, axis=None)
     mean_ce = mirrored_strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_ce, axis=None)
+    #print(type(mean_loss))
+    #print(f"mean_loss : {mean_loss}, mean_ce : {mean_ce} per_replica_ce : {per_replica_ce}")
+    #mean = tf.reduce_mean(mean_loss)
+    #print(f"mean : {mean}")
     # mean_l2 = mirrored_strategy.reduce(tf.distribute.ReduceOp.MEAN, per_replica_l2, axis=None)
 
     return mean_ce
@@ -168,7 +176,13 @@ if __name__ == '__main__':
 
                 # netmind relatived
                 #nmp.step({"loss": loss_ce, "Learning rate": scheduler.get_last_lr()[0]})
-                nmp.step({"loss": loss_ce, "Learning rate": learning_rate_schedules()})
+                learing_rate = learning_rate_schedules(i)
+                print("learning_rate_schedules : ", learing_rate, "  type: ", type(learing_rate))
+                print("learing_rate[0] : ",learing_rate.numpy())
+                print(f"loss_ce : {loss_ce}, type : {type(loss_ce)}")
+                #nmp.step({"loss": loss_ce.numpy(), "Learning rate": learing_rate.numpy()})
+                print(type(learing_rate.numpy()), learing_rate.numpy())
+                nmp.step({"loss": 0.5, "Learning rate":0.1})
                 nmp.save_pretrained_by_step(c.save_steps)
 
 

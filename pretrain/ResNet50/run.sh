@@ -1,0 +1,10 @@
+export PLATFORM=pytorch 
+export JOBID=25c98523-6f19-4031-8201-3aea2a156eec 
+export USE_DDP=1
+export RANK=0
+export LOCAL_RANK=0
+export PLATFORM=tensorflow
+export LD_LIBRARY_PATH=/home/protago/miniconda3/envs/netmind-tf2/lib:${LD_LIBRARY_PATH}
+export PYTHONPATH=/home/protago/ly/NetMind-Images/NetmindModelEnv/NetmindMixins:${PYTHONPATH}
+#python train_mm_netmind.py
+python test.py

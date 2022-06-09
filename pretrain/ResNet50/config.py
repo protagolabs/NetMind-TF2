@@ -6,10 +6,10 @@ input_shape = (224, 224, 3)
 weight_decay = 1e-4
 label_smoothing = 0.1
 
-train_num = 1281167
-# train_num = 5000
-test_num = 50000
-# test_num = 5000
+#train_num = 1281167
+train_num = 500
+#test_num = 50000
+test_num = 500
 iterations_per_epoch = int(train_num / batch_size)
 test_iterations = int(test_num / batch_size)
 # test_iterations = int(test_num / batch_size) + 1
@@ -27,8 +27,10 @@ save_weight_file = 'result/weight/ResNet_50_mm.h5'
 # Dataset config
 train_list_path = 'data/train_label.txt'
 test_list_path = 'data/validation_label.txt'
-train_data_path = '/home/xing/datasets/imagenet/train/'
-test_data_path = '/home/xing/datasets/imagenet/val/'
+#train_data_path = '/home/xing/datasets/imagenet/train/'
+#test_data_path = '/home/xing/datasets/imagenet/val/'
+train_data_path = '/data/resnet50/train'
+test_data_path = '/data/resnet50/val'
 
 # Augmentation config
 # From 'Bag of tricks for image classification with convolutional neural networks'
