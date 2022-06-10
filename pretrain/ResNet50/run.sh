@@ -1,5 +1,5 @@
 export PLATFORM=pytorch 
-export JOBID=25c98523-6f19-4031-8201-3aea2a156eec 
+export JOBID=8d9cc164-9236-4cdf-83d0-898edf0dcec9		
 export USE_DDP=1
 export RANK=0
 export LOCAL_RANK=0

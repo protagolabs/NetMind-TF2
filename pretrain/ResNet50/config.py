@@ -64,6 +64,6 @@ block_num = {18: (2, 2, 2, 2),
 
 filter_num = (64, 128, 256, 512)
 
-save_steps = 5000
+save_steps = 5
 local_rank = os.getenv('LOCAL_RANK', -1)
 

@@ -6,7 +6,7 @@ from tqdm import tqdm
 from utils.data_utils_mm import train_iterator, test_iterator
 from utils.eval_utils import cross_entropy_batch, correct_num_batch, l2_loss
 from model.ResNet import ResNet
-from NetmindMixins.Netmind import nmp, NetmindDistributedModel, NetmindOptimizer
+from NetmindMixins.Netmind import nmp, NetmindDistributedModel, NetmindOptimizer, NetmindDistributedModel
 
 
 
@@ -146,6 +146,7 @@ if __name__ == '__main__':
     train_data_iterator = iter(mirrored_strategy.experimental_distribute_dataset(dataset_train))
 
 
+    NetmindDistributedModel(model)
     #  eval
     dataset_eval = test_iterator().batch(global_batch_size)
     test_data_iterator = iter(mirrored_strategy.experimental_distribute_dataset(dataset_eval))
@@ -171,21 +172,16 @@ if __name__ == '__main__':
                 loss_ce = train_step(ds)
                 sum_ce += tf.reduce_sum(loss_ce)
                 
-                # print(loss_ce)
-                # print('ce: {:.4f}'.format(tf.reduce_mean(loss_ce)))
                 # netmind relatived
                 #nmp.step({"loss": loss_ce, "Learning rate": scheduler.get_last_lr()[0]})
                 learing_rate = learning_rate_schedules(i)
-                #print("learning_rate_schedules : ", learing_rate, "  type: ", type(learing_rate))
-                #print("learing_rate[0] : ",learing_rate.numpy())
-                #print(f"loss_ce : {loss_ce}, type : {type(loss_ce)}")
-                #nmp.step({"loss": loss_ce.numpy(), "Learning rate": learing_rate.numpy()})
                 print(type(learing_rate.numpy()), learing_rate.numpy())
                 final_loss = float((sum_ce / c.train_num).numpy())
                 final_learing_rate = float(learing_rate.numpy())
                 print(f"loss : {final_loss}, type: {type(final_loss)}")
                 print(f"learing_rate : {final_learing_rate}, type: {type(final_learing_rate)}")
                 nmp.step({"loss": final_loss, "Learning rate":final_learing_rate})
+                nmp.save_pretrained_by_step(c.save_steps)
 
 
             print('train: cross entropy loss: {:.4f}\n'.format(sum_ce / c.train_num))
