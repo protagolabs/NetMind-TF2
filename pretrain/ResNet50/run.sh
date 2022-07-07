@@ -1,10 +1,13 @@
+rm -rf checkpoint
 export PLATFORM=pytorch 
-export JOBID=8d9cc164-9236-4cdf-83d0-898edf0dcec9		
+export JOBID=f31bf13b-c0aa-4ff5-8882-805e4e94c6f5
 export USE_DDP=1
 export RANK=0
 export LOCAL_RANK=0
 export PLATFORM=tensorflow
-export LD_LIBRARY_PATH=/home/protago/miniconda3/envs/netmind-tf2/lib:${LD_LIBRARY_PATH}
+#export LD_LIBRARY_PATH=/home/protago/miniconda3/envs/netmind-tf2/lib:${LD_LIBRARY_PATH}
 export PYTHONPATH=/home/protago/ly/NetMind-Images/NetmindModelEnv/NetmindMixins:${PYTHONPATH}
-#python train_mm_netmind.py
-python test.py
+#export TIME_ESTIMATE_PROCESS=1
+export MONITOR=wandb
+#python test_delete_nmp.py
+python test.py 

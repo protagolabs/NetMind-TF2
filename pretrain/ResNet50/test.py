@@ -7,7 +7,10 @@ from utils.data_utils_mm import train_iterator, test_iterator
 from utils.eval_utils import cross_entropy_batch, correct_num_batch, l2_loss
 from model.ResNet import ResNet
 from NetmindMixins.Netmind import nmp, NetmindDistributedModel, NetmindOptimizer, NetmindDistributedModel
-
+import faulthandler
+import sys
+faulthandler.enable()
+faulthandler.dump_traceback(file=sys.stderr, all_threads=True)
 
 
 physical_devices = tf.config.list_physical_devices('GPU') 
@@ -116,11 +119,12 @@ if __name__ == '__main__':
 
         inputs = tf.keras.Input(shape=c.input_shape)
 
-
+        """
         # load pretrain
         if c.load_weight_file is not None:
             model.load_weights(c.load_weight_file)
             # print('pretrain weight l2 loss:{:.4f}'.format(l2_loss(model)))
+        """
 
         # here we automatically change the iterations per epoch based on number of gpus
         learning_rate_schedules = CosineDecayWithWarmUP(initial_learning_rate=c.initial_learning_rate * num_gpus,
@@ -151,20 +155,24 @@ if __name__ == '__main__':
     dataset_eval = test_iterator().batch(global_batch_size)
     test_data_iterator = iter(mirrored_strategy.experimental_distribute_dataset(dataset_eval))
  
-    nmp.init_train_bar(total_epoch=c.train_num, step_per_epoch=c.train_num/c.batch_size)
+    nmp.init_train_bar(total_epoch=c.epoch_num, step_per_epoch=c.train_num//c.batch_size)
     
     t_total = nmp.cur_step
     epochs_trained = nmp.cur_epoch
+    print(f'epochs_trained: {epochs_trained}')
 
     with open(c.log_file, 'a') as f:
 
         #for epoch_num in range(c.epoch_num):
         for epoch_num in range(epochs_trained, c.epoch_num):
+            print(f'training with epoch_num : {epoch_num} in range of  {epochs_trained}-------{c.epoch_num}')
 
             # train 
             sum_ce = 0
+            print(f'in one epoch : loop start in range {c.train_num // global_batch_size}')
             for i in tqdm(range(int(c.train_num // global_batch_size))):
                 if nmp.should_skip_step():
+                    print('skip step.')
                     continue
                 # for ds in train_data_iterator:
                 ds = train_data_iterator.get_next()
@@ -181,6 +189,7 @@ if __name__ == '__main__':
                 print(f"loss : {final_loss}, type: {type(final_loss)}")
                 print(f"learing_rate : {final_learing_rate}, type: {type(final_learing_rate)}")
                 nmp.step({"loss": final_loss, "Learning rate":final_learing_rate})
+                print('save_pretrained_by_step...')
                 nmp.save_pretrained_by_step(c.save_steps)
 
 
@@ -200,12 +209,15 @@ if __name__ == '__main__':
             print('test: cross entropy loss: {:.4f}, accuracy: {:.4f}\n'.format(sum_ce / c.test_num, sum_correct_num / c.test_num))
             f.write('test: cross entropy loss: {:.4f}, accuracy: {:.4f}\n'.format(sum_ce / c.test_num, sum_correct_num / c.test_num))
 
-
+            print('begin save weight')
             model.save_weights(c.save_weight_file, save_format='h5')
+            print('end save weight')
 
             # save intermediate results
             if epoch_num % 5 == 4:
                 os.system('cp {} {}_epoch_{}.h5'.format(c.save_weight_file, c.save_weight_file.split('.')[0], epoch_num))
+    nmp.finish_training()
+    print(f'training finished...')
 
 """In the example above, we iterated over the `dist_dataset` to provide input to your training. We also provide the  `tf.distribute.Strategy.make_experimental_numpy_dataset` to support numpy inputs. You can use this API to create a dataset before calling `tf.distribute.Strategy.experimental_distribute_dataset`.
 Another way of iterating over your data is to explicitly use iterators. You may want to do this when you want to run for a given number of steps as opposed to iterating over the entire dataset.

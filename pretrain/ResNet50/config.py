@@ -7,9 +7,9 @@ weight_decay = 1e-4
 label_smoothing = 0.1
 
 #train_num = 1281167
-train_num = 500
+train_num = 300
 #test_num = 50000
-test_num = 500
+test_num = 300
 iterations_per_epoch = int(train_num / batch_size)
 test_iterations = int(test_num / batch_size)
 # test_iterations = int(test_num / batch_size) + 1
@@ -18,7 +18,7 @@ warm_iterations = iterations_per_epoch
 initial_learning_rate = 0.05
 # initial_learning_rate = 0.1
 minimum_learning_rate = 0.0001
-epoch_num = 50
+epoch_num = 5
 
 log_file = 'result/log/ResNet_50_mm.txt'
 load_weight_file = None
@@ -64,6 +64,6 @@ block_num = {18: (2, 2, 2, 2),
 
 filter_num = (64, 128, 256, 512)
 
-save_steps = 5
+save_steps = 10
 local_rank = os.getenv('LOCAL_RANK', -1)
 
