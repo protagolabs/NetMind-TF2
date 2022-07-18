@@ -1,9 +1,10 @@
 import os
+import json
 import traceback
 import tensorflow as tf
 import config as c
 from tqdm import tqdm
-from utils.data_utils_mm import train_iterator, test_iterator, cnt
+from utils.data_utils_mm import train_iterator, test_iterator
 from utils.eval_utils import cross_entropy_batch, correct_num_batch, l2_loss
 from model.ResNet import ResNet
 from NetmindMixins.Netmind import nmp, NetmindDistributedModel, NetmindOptimizer, NetmindDistributedModel
@@ -11,7 +12,7 @@ import faulthandler
 import sys
 faulthandler.enable()
 faulthandler.dump_traceback(file=sys.stderr, all_threads=True)
-
+os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
 
 physical_devices = tf.config.list_physical_devices('GPU') 
 for gpu_instance in physical_devices: 
@@ -42,12 +43,13 @@ update our model's variables. To distribute this training step, we put in in a f
 `tf.distrbute.Strategy.experimental_run_v2` along with the dataset inputs that we get from `dist_dataset` created before:
 '''
 
-@tf.function
+#@tf.function
 def train_step(dist_inputs):
 
     def step_fn(inputs):
         images, labels = inputs
-        
+         
+        print(f'labels : {  labels.numpy() }')
         with tf.GradientTape() as tape:
             prediction = model(images)
             # ce = cross_entropy_batch(labels, prediction, label_smoothing=c.label_smoothing)
@@ -60,10 +62,10 @@ def train_step(dist_inputs):
             optimizer.apply_gradients(list(zip(grads, model.trainable_variables)))
             return ce, l2
 
-    per_replica_ce,  per_replica_l2 = mirrored_strategy.run(step_fn, args=(dist_inputs,))
-    # mean_loss = mirrored_strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_losses, axis=None)
-    mean_ce = mirrored_strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_ce, axis=None)
-    # mean_l2 = mirrored_strategy.reduce(tf.distribute.ReduceOp.MEAN, per_replica_l2, axis=None)
+    per_replica_ce,  per_replica_l2 = multi_worker_mirrored_strategy.run(step_fn, args=(dist_inputs,))
+    # mean_loss = multi_worker_mirrored_strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_losses, axis=None)
+    mean_ce = multi_worker_mirrored_strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_ce, axis=None)
+    # mean_l2 = multi_worker_mirrored_strategy.reduce(tf.distribute.ReduceOp.MEAN, per_replica_l2, axis=None)
 
 
     return mean_ce
@@ -75,15 +77,17 @@ def test_step(dist_inputs):
     def step_fn(inputs):
         images, labels = inputs
 
+        print(f'labels : {labels}')
         prediction = model(images, training=False)
         ce = cross_entropy_batch(labels, prediction)
         correct_num = correct_num_batch(labels, prediction)
 
         return ce, correct_num
 
-    per_replica_losses, per_replica_pred = mirrored_strategy.run(step_fn, args=(dist_inputs,))
-    mean_loss = mirrored_strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_losses, axis=None)
-    acc = mirrored_strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_pred, axis=None)
+    per_replica_losses, per_replica_pred = multi_worker_mirrored_strategy.run(step_fn, args=(dist_inputs,))
+    print(f'per_replica_losses: {per_replica_losses}, per_replica_pred : {per_replica_pred}')
+    mean_loss = multi_worker_mirrored_strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_losses, axis=None)
+    acc = multi_worker_mirrored_strategy.reduce(tf.distribute.ReduceOp.SUM, tf.compat.v1.to_float(per_replica_pred, name='ToFloat'), axis=None)
     return mean_loss, acc
 
 def set_input_shape(img, label):
@@ -95,21 +99,29 @@ def set_input_shape(img, label):
 
 if __name__ == '__main__':
 
-    mirrored_strategy = tf.distribute.MirroredStrategy()
-    # mirrored_strategy = tf.distribute.MirroredStrategy(["GPU:0", "GPU:1", "GPU:2", "GPU:3"])
-    #mirrored_strategy = tf.distribute.OneDeviceStrategy(device="GPU:0")
+    os.environ['TF_CONFIG'] = json.dumps({
+        'cluster': {
+            'worker': [f'localhost:{c.port_start+ii}' for ii in range(c.n_workers)],
+        },
+        'task': {'type': 'worker', 'index': sys.argv[1]}
+    })
+
+    multi_worker_mirrored_strategy = tf.distribute.MultiWorkerMirroredStrategy()
+    #multi_worker_mirrored_strategy = tf.distribute.MirroredStrategy()
+    # multi_worker_mirrored_strategy = tf.distribute.MirroredStrategy(["GPU:0", "GPU:1", "GPU:2", "GPU:3"])
+    # multi_worker_mirrored_strategy = tf.distribute.OneDeviceStrategy(device="GPU:0")
 
 
-    num_gpus = mirrored_strategy.num_replicas_in_sync
+    num_gpus = multi_worker_mirrored_strategy.num_replicas_in_sync
 
     print('Number of devices: {}'.format(num_gpus))
-    nmp.init()
+    #nmp.init()
 
-    global_batch_size = c.batch_size *  num_gpus
+    global_batch_size = c.batch_size *  c.n_workers
 
 # First, we create the model and optimizer inside the strategy's scope. This ensures that any variables created with the model and optimizer are mirrored variables.
 
-    with mirrored_strategy.scope():
+    with multi_worker_mirrored_strategy.scope():
 
         model = ResNet(50)
 
@@ -127,10 +139,10 @@ if __name__ == '__main__':
         """
 
         # here we automatically change the iterations per epoch based on number of gpus
-        learning_rate_schedules = CosineDecayWithWarmUP(initial_learning_rate=c.initial_learning_rate * num_gpus,
-                                                        decay_steps=c.epoch_num * int(c.iterations_per_epoch / num_gpus)  - int(c.warm_iterations / num_gpus),
-                                                        alpha=c.minimum_learning_rate * num_gpus,
-                                                        warm_up_step=int(c.warm_iterations / num_gpus))
+        learning_rate_schedules = CosineDecayWithWarmUP(initial_learning_rate=c.initial_learning_rate * c.n_workers,
+                                                        decay_steps=c.epoch_num * int(c.iterations_per_epoch / c.n_workers)  - int(c.warm_iterations / c.n_workers),
+                                                        alpha=c.minimum_learning_rate * c.n_workers,
+                                                        warm_up_step=int(c.warm_iterations / c.n_workers))
 
         optimizer = tf.keras.optimizers.SGD(learning_rate=learning_rate_schedules, momentum=0.9)
 
@@ -141,30 +153,30 @@ if __name__ == '__main__':
 
 
     # dataset = train_iterator().batch(global_batch_size)
-    # train_data_iterator = mirrored_strategy.experimental_distribute_dataset(dataset) 
+    # train_data_iterator = multi_worker_mirrored_strategy.experimental_distribute_dataset(dataset) 
     # for inputs in train_data_iterator:
     #     print(train_step(inputs))
     #     # train_step(inputs)
     # train_iterator = train_iterator.map(set_input_shape)
     dataset_train = train_iterator().batch(global_batch_size)
-    train_data_iterator = iter(mirrored_strategy.experimental_distribute_dataset(dataset_train))
+    train_data_iterator = iter(multi_worker_mirrored_strategy.experimental_distribute_dataset(dataset_train))
 
 
-    NetmindDistributedModel(model)
+    #NetmindDistributedModel(model)
     #  eval
     dataset_eval = test_iterator().batch(global_batch_size)
-    test_data_iterator = iter(mirrored_strategy.experimental_distribute_dataset(dataset_eval))
+    test_data_iterator = iter(multi_worker_mirrored_strategy.experimental_distribute_dataset(dataset_eval))
  
-    nmp.init_train_bar(total_epoch=c.epoch_num, step_per_epoch=c.train_num//c.batch_size)
+    #nmp.init_train_bar(total_epoch=c.epoch_num, step_per_epoch=c.train_num//c.batch_size)
     
-    t_total = nmp.cur_step
-    epochs_trained = nmp.cur_epoch
-    print(f'epochs_trained: {epochs_trained}')
-    print(f'test.py pid : {os.getpid()} ')
-    next_cnt = 0
-    with open(c.log_file, 'a') as f:
+    #t_total = nmp.cur_step
+    #epochs_trained = nmp.cur_epoch
+    epochs_trained = 0
+    #print(f'epochs_trained: {epochs_trained}')
 
+    with open(c.log_file, 'a') as f:
         #for epoch_num in range(c.epoch_num):
+        print(epochs_trained, c.epoch_num)
         for epoch_num in range(epochs_trained, c.epoch_num):
             print(f'training with epoch_num : {epoch_num} in range of  {epochs_trained}-------{c.epoch_num}')
 
@@ -172,27 +184,28 @@ if __name__ == '__main__':
             sum_ce = 0
             print(f'in one epoch : loop start in range {c.train_num // global_batch_size}')
             for i in tqdm(range(int(c.train_num // global_batch_size))):
+                """
                 if nmp.should_skip_step():
                     print('skip step.')
                     continue
+                """
                 # for ds in train_data_iterator:
                 ds = train_data_iterator.get_next()
-                print(f'len ds : {len(ds)}, type : {type(ds)}')
-                next_cnt += 1
+                # print(ds)
                 loss_ce = train_step(ds)
                 sum_ce += tf.reduce_sum(loss_ce)
                 
                 # netmind relatived
                 #nmp.step({"loss": loss_ce, "Learning rate": scheduler.get_last_lr()[0]})
                 learing_rate = learning_rate_schedules(i)
-                print(type(learing_rate.numpy()), learing_rate.numpy(), f'current  epoch : {epoch_num}')
+                print(type(learing_rate.numpy()), learing_rate.numpy())
                 final_loss = float((sum_ce / c.train_num).numpy())
                 final_learing_rate = float(learing_rate.numpy())
                 print(f"loss : {final_loss}, type: {type(final_loss)}")
                 print(f"learing_rate : {final_learing_rate}, type: {type(final_learing_rate)}")
-                nmp.step({"loss": final_loss, "Learning rate":final_learing_rate})
+                #nmp.step({"loss": final_loss, "Learning rate":final_learing_rate})
                 print('save_pretrained_by_step...')
-                nmp.save_pretrained_by_step(c.save_steps)
+                #nmp.save_pretrained_by_step(c.save_steps)
 
 
             print('train: cross entropy loss: {:.4f}\n'.format(sum_ce / c.train_num))
@@ -212,16 +225,14 @@ if __name__ == '__main__':
             f.write('test: cross entropy loss: {:.4f}, accuracy: {:.4f}\n'.format(sum_ce / c.test_num, sum_correct_num / c.test_num))
 
             print('begin save weight')
-            model.save_weights(c.save_weight_file, save_format='h5')
+            #model.save_weights(c.save_weight_file, save_format='h5')
             print('end save weight')
 
             # save intermediate results
             if epoch_num % 5 == 4:
                 os.system('cp {} {}_epoch_{}.h5'.format(c.save_weight_file, c.save_weight_file.split('.')[0], epoch_num))
-    import time
-    print('begin sleep 15 seconds')
-    nmp.finish_training()
-    print(f'training finished... cnt : {cnt}, next_cnt : {next_cnt}')
+
+    print(f'training finished...')
 
 """In the example above, we iterated over the `dist_dataset` to provide input to your training. We also provide the  `tf.distribute.Strategy.make_experimental_numpy_dataset` to support numpy inputs. You can use this API to create a dataset before calling `tf.distribute.Strategy.experimental_distribute_dataset`.
 Another way of iterating over your data is to explicitly use iterators. You may want to do this when you want to run for a given number of steps as opposed to iterating over the entire dataset.

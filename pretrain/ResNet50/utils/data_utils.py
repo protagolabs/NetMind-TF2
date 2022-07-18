@@ -27,13 +27,21 @@ def load_list(list_path, image_root_path):
     # print(labels)
     return images, labels
 
+image_cnt = 0
 def load_image(image_path, label, augment=False, crop_10=False):
     """
     In training, it is highly recommended to set the augment to true.
     In test, the standard 10-crop test [1] is provided for fair comparison.
     [1] K. He, X. Zhang, S. Ren, and J. Sun. Deep residual learning for image recognition. In CVPR, 2016.
     """
-    image = cv2.imread(image_path.numpy().decode()).astype(np.float32)
+    try:
+        image = cv2.imread(image_path.numpy().decode()).astype(np.float32)
+        print(f'handling image : {image}')
+        image_cnt += 1
+    except:
+        #raise Exception(f"imread failed, path:{image_path}")
+        print(f"imread failed, path:{image_path}")
+        return None, None
 
     if augment:
         image = random_aspect(image)

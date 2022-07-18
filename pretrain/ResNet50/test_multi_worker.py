@@ -1,6 +1,8 @@
 import os
+import json
 import traceback
 import tensorflow as tf
+from  keras.backend import set_session
 import config as c
 from tqdm import tqdm
 from utils.data_utils_mm import train_iterator, test_iterator, cnt
@@ -12,11 +14,27 @@ import sys
 faulthandler.enable()
 faulthandler.dump_traceback(file=sys.stderr, all_threads=True)
 
+import cgitb
+cgitb.enable(format='text')
 
+os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
 physical_devices = tf.config.list_physical_devices('GPU') 
 for gpu_instance in physical_devices: 
     tf.config.experimental.set_memory_growth(gpu_instance, True)
 
+def allow_memory_growth():
+    gpus = tf.config.experimental.list_physical_devices('GPU')
+    if gpus:
+        try:
+            # Currently, memory growth needs to be the same across GPUs
+            for gpu in gpus:
+                tf.config.experimental.set_memory_growth(gpu, True)
+            logical_gpus = tf.config.experimental.list_logical_devices('GPU')
+            print(f'{len(gpus)} Physical GPUs, {len(logical_gpus)} Logical GPUs')
+        except RuntimeError as e:
+            # Memory growth must be set before GPUs have been initialized
+            print(e)
+    return
 
 
 class CosineDecayWithWarmUP(tf.keras.experimental.CosineDecay):
@@ -60,10 +78,10 @@ def train_step(dist_inputs):
             optimizer.apply_gradients(list(zip(grads, model.trainable_variables)))
             return ce, l2
 
-    per_replica_ce,  per_replica_l2 = mirrored_strategy.run(step_fn, args=(dist_inputs,))
-    # mean_loss = mirrored_strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_losses, axis=None)
-    mean_ce = mirrored_strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_ce, axis=None)
-    # mean_l2 = mirrored_strategy.reduce(tf.distribute.ReduceOp.MEAN, per_replica_l2, axis=None)
+    per_replica_ce,  per_replica_l2 = multi_worker_mirrored_strategy.run(step_fn, args=(dist_inputs,))
+    # mean_loss = multi_worker_mirrored_strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_losses, axis=None)
+    mean_ce = multi_worker_mirrored_strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_ce, axis=None)
+    # mean_l2 = multi_worker_mirrored_strategy.reduce(tf.distribute.ReduceOp.MEAN, per_replica_l2, axis=None)
 
 
     return mean_ce
@@ -81,9 +99,9 @@ def test_step(dist_inputs):
 
         return ce, correct_num
 
-    per_replica_losses, per_replica_pred = mirrored_strategy.run(step_fn, args=(dist_inputs,))
-    mean_loss = mirrored_strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_losses, axis=None)
-    acc = mirrored_strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_pred, axis=None)
+    per_replica_losses, per_replica_pred = multi_worker_mirrored_strategy.run(step_fn, args=(dist_inputs,))
+    mean_loss = multi_worker_mirrored_strategy.reduce(tf.distribute.ReduceOp.SUM, per_replica_losses, axis=None)
+    acc = multi_worker_mirrored_strategy.reduce(tf.distribute.ReduceOp.SUM, tf.compat.v1.to_float(per_replica_pred, name='ToFloat'), axis=None)
     return mean_loss, acc
 
 def set_input_shape(img, label):
@@ -95,21 +113,38 @@ def set_input_shape(img, label):
 
 if __name__ == '__main__':
 
-    mirrored_strategy = tf.distribute.MirroredStrategy()
-    # mirrored_strategy = tf.distribute.MirroredStrategy(["GPU:0", "GPU:1", "GPU:2", "GPU:3"])
-    #mirrored_strategy = tf.distribute.OneDeviceStrategy(device="GPU:0")
+    from tensorflow.python.client import device_lib
+    print(device_lib.list_local_devices())
+    os.environ['TF_CONFIG'] = json.dumps({
+        'cluster': {
+            'worker': [f'localhost:{c.port_start+ii}' for ii in range(c.n_workers)],
+        },
+        'task': {'type': 'worker', 'index': sys.argv[1]}
+    })
+  
+    """
+    leo_cfg = tf.compat.v1.ConfigProto
+
+    leo_cfg.gpu_options.allow_growth = True  # dynamically grow the memory used on the GPU
+    set_session(tf.Session(config=leo_cfg))  # set this TensorFlow session as the default session for Keras 
+    """
+
+    #allow_memory_growth must be called after  tf.distribute.MultiWorkerMirroredStrategy
+    multi_worker_mirrored_strategy = tf.distribute.MultiWorkerMirroredStrategy()
+    # multi_worker_mirrored_strategy = tf.distribute.MirroredStrategy(["GPU:0", "GPU:1", "GPU:2", "GPU:3"])
+    #multi_worker_mirrored_strategy = tf.distribute.OneDeviceStrategy(device="GPU:0")
 
 
-    num_gpus = mirrored_strategy.num_replicas_in_sync
+    num_gpus = multi_worker_mirrored_strategy.num_replicas_in_sync
 
     print('Number of devices: {}'.format(num_gpus))
     nmp.init()
 
-    global_batch_size = c.batch_size *  num_gpus
+    global_batch_size = c.batch_size *  c.n_workers
 
 # First, we create the model and optimizer inside the strategy's scope. This ensures that any variables created with the model and optimizer are mirrored variables.
 
-    with mirrored_strategy.scope():
+    with multi_worker_mirrored_strategy.scope():
 
         model = ResNet(50)
 
@@ -127,10 +162,10 @@ if __name__ == '__main__':
         """
 
         # here we automatically change the iterations per epoch based on number of gpus
-        learning_rate_schedules = CosineDecayWithWarmUP(initial_learning_rate=c.initial_learning_rate * num_gpus,
-                                                        decay_steps=c.epoch_num * int(c.iterations_per_epoch / num_gpus)  - int(c.warm_iterations / num_gpus),
-                                                        alpha=c.minimum_learning_rate * num_gpus,
-                                                        warm_up_step=int(c.warm_iterations / num_gpus))
+        learning_rate_schedules = CosineDecayWithWarmUP(initial_learning_rate=c.initial_learning_rate * c.n_workers,
+                                                        decay_steps=c.epoch_num * int(c.iterations_per_epoch / c.n_workers)  - int(c.warm_iterations / c.n_workers),
+                                                        alpha=c.minimum_learning_rate * c.n_workers,
+                                                        warm_up_step=int(c.warm_iterations / c.n_workers))
 
         optimizer = tf.keras.optimizers.SGD(learning_rate=learning_rate_schedules, momentum=0.9)
 
@@ -141,19 +176,19 @@ if __name__ == '__main__':
 
 
     # dataset = train_iterator().batch(global_batch_size)
-    # train_data_iterator = mirrored_strategy.experimental_distribute_dataset(dataset) 
+    # train_data_iterator = multi_worker_mirrored_strategy.experimental_distribute_dataset(dataset) 
     # for inputs in train_data_iterator:
     #     print(train_step(inputs))
     #     # train_step(inputs)
     # train_iterator = train_iterator.map(set_input_shape)
     dataset_train = train_iterator().batch(global_batch_size)
-    train_data_iterator = iter(mirrored_strategy.experimental_distribute_dataset(dataset_train))
+    train_data_iterator = iter(multi_worker_mirrored_strategy.experimental_distribute_dataset(dataset_train))
 
 
     NetmindDistributedModel(model)
     #  eval
     dataset_eval = test_iterator().batch(global_batch_size)
-    test_data_iterator = iter(mirrored_strategy.experimental_distribute_dataset(dataset_eval))
+    test_data_iterator = iter(multi_worker_mirrored_strategy.experimental_distribute_dataset(dataset_eval))
  
     nmp.init_train_bar(total_epoch=c.epoch_num, step_per_epoch=c.train_num//c.batch_size)
     
@@ -211,8 +246,9 @@ if __name__ == '__main__':
             print('test: cross entropy loss: {:.4f}, accuracy: {:.4f}\n'.format(sum_ce / c.test_num, sum_correct_num / c.test_num))
             f.write('test: cross entropy loss: {:.4f}, accuracy: {:.4f}\n'.format(sum_ce / c.test_num, sum_correct_num / c.test_num))
 
-            print('begin save weight')
-            model.save_weights(c.save_weight_file, save_format='h5')
+            print('begin save weight, ', sys.argv[1])
+            #TODO: netmind already save weights
+            #model.save_weights(c.save_weight_file, save_format='h5')
             print('end save weight')
 
             # save intermediate results

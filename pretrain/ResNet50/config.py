@@ -1,13 +1,16 @@
 import os
 # Training config
+n_workers=2
+port_start=30000
+
 category_num = 1000
-batch_size = 128
+batch_size = 100 
 input_shape = (224, 224, 3)
 weight_decay = 1e-4
 label_smoothing = 0.1
 
 #train_num = 1281167
-train_num = 300
+train_num = 1300
 #test_num = 50000
 test_num = 300
 iterations_per_epoch = int(train_num / batch_size)
@@ -18,19 +21,22 @@ warm_iterations = iterations_per_epoch
 initial_learning_rate = 0.05
 # initial_learning_rate = 0.1
 minimum_learning_rate = 0.0001
-epoch_num = 5
+epoch_num = 1
 
 log_file = 'result/log/ResNet_50_mm.txt'
 load_weight_file = None
 save_weight_file = 'result/weight/ResNet_50_mm.h5'
 
 # Dataset config
-train_list_path = 'data/train_label.txt'
-test_list_path = 'data/validation_label.txt'
+#train_list_path = 'data/train_label.txt'
+train_list_path = 'data/train_test.txt'
+test_list_path  = 'data/validation_test.txt'
+#test_list_path = 'data/validation_label.txt'
 #train_data_path = '/home/xing/datasets/imagenet/train/'
 #test_data_path = '/home/xing/datasets/imagenet/val/'
-train_data_path = '/data/resnet50/train'
-test_data_path = '/data/resnet50/val'
+os.environ['DATA_LOCATION'] = os.getenv('DATA_LOCATION', '/data/resnet50/extract')
+train_data_path = os.getenv('DATA_LOCATION') + "/train/"
+test_data_path = os.getenv('DATA_LOCATION') + "/val/"
 
 # Augmentation config
 # From 'Bag of tricks for image classification with convolutional neural networks'
