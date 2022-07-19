@@ -73,3 +73,10 @@ filter_num = (64, 128, 256, 512)
 save_steps = 10
 local_rank = os.getenv('LOCAL_RANK', -1)
 
+tf_config = {
+        'cluster': {
+            'worker' : ['192.168.1.23:30000', '192.168.1.15:30001'],
+        },
+        'task': {'type': 'worker'}
+}
+
