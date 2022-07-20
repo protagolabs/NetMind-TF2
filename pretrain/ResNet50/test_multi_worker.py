@@ -102,7 +102,7 @@ def test_step(dist_inputs):
     return mean_loss, acc
 
 def set_input_shape(img, label):
-    img = img.set_shape(args.input_shape)
+    img = img.set_shape(c.input_shape)
     label = label.set_shape([args.category_num])
     return img, label
 
@@ -113,7 +113,7 @@ if __name__ == '__main__':
     from tensorflow.python.client import device_lib
     print(device_lib.list_local_devices())
     if not os.getenv('TF_CONFIG'):
-        c.tf_config['task']['index'] = int(sys.argv[1])
+        c.tf_config['task']['index'] = int(os.getenv('INDEX'))
         os.environ['TF_CONFIG'] = json.dumps(c.tf_config)
     print(os.environ['TF_CONFIG'])
 
@@ -135,12 +135,9 @@ if __name__ == '__main__':
     with multi_worker_mirrored_strategy.scope():
 
         model = ResNet(50)
-        print('building')
-        model.build(input_shape=(None,) + args.input_shape)
-        print('summary...')
+        model.build(input_shape=(None,) + c.input_shape)
         model.summary()
-        print('input')
-        inputs = tf.keras.Input(shape=args.input_shape)
+        inputs = tf.keras.Input(shape=c.input_shape)
 
         """
         # load pretrain
@@ -185,7 +182,7 @@ if __name__ == '__main__':
         print(f'epochs_trained: {epochs_trained}')
         print(f'test.py pid : {os.getpid()} ')
         next_cnt = 0
-        with open(args.log_file, 'a') as f:
+        with open(c.log_file, 'a') as f:
 
             for epoch_num in range(epochs_trained, c.epoch_num):
                 print(f'training with epoch_num : {epoch_num} in range of  {epochs_trained}-------{c.epoch_num}')

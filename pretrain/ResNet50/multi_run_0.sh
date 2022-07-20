@@ -11,6 +11,12 @@ export PYTHONPATH=/home/protago/ly/NetMind-Images/NetmindModelEnv/NetmindMixins:
 export MONITOR=tensorboard
 echo $PYTHONPATH
 export  ROLE=MASTER
+export INDEX=0
 #CUDA_VISIBLE_DEVICES="0" python test_delete_nmp.py 0 
-CUDA_VISIBLE_DEVICES="0" python test_multi_worker.py  0
+CUDA_VISIBLE_DEVICES="0" python test_multi_worker.py  --n_workers=2  --category_num=1000
+                          --batch_size=100 --weight_decay=0.0001 --label_smoothing=0.1 --train_num=1300
+                          --test_num=300 --initial_learning_rate=0.05 minimum_learning_rate=0.0001
+                          --save_steps=10
+
+
 #python test_multi_worker.py  0
