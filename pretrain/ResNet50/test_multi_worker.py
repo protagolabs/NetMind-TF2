@@ -166,13 +166,15 @@ if __name__ == '__main__':
         #    print(train_step(inputs))
         #    # train_step(inputs)
         # train_iterator = train_iterator.map(set_input_shape)
-        dataset_train = train_iterator().batch(global_batch_size)
+        train_data_path = args.data + "/train"
+        dataset_train = train_iterator(train_data_path=train_data_path).batch(global_batch_size)
         train_data_iterator = iter(multi_worker_mirrored_strategy.experimental_distribute_dataset(dataset_train))
 
 
         NetmindDistributedModel(model)
         #  eval
-        dataset_eval = test_iterator().batch(global_batch_size)
+        test_data_path = args.data + "/val"
+        dataset_eval = test_iterator(test_data_path=test_data_path).batch(global_batch_size)
         test_data_iterator = iter(multi_worker_mirrored_strategy.experimental_distribute_dataset(dataset_eval))
 
         nmp.init_train_bar(total_epoch=c.epoch_num, step_per_epoch=args.train_num//args.batch_size)
@@ -208,7 +210,7 @@ if __name__ == '__main__':
                     print(f"loss : {final_loss}, type: {type(final_loss)}")
                     print(f"learing_rate : {final_learing_rate}, type: {type(final_learing_rate)}")
                     nmp.step({"loss": final_loss, "Learning rate":final_learing_rate})
-                    print('save_pretrained_by_step...')
+                    print(f'save_pretrained_by_step : {args.save_steps}')
                     nmp.save_pretrained_by_step(args.save_steps)
 
 
