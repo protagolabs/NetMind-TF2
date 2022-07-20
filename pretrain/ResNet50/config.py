@@ -24,8 +24,8 @@ minimum_learning_rate = 0.0001
 epoch_num = 1
 
 log_file = 'result/log/ResNet_50_mm.txt'
-load_weight_file = None
-save_weight_file = 'result/weight/ResNet_50_mm.h5'
+#load_weight_file = None
+#save_weight_file = 'result/weight/ResNet_50_mm.h5'
 
 # Dataset config
 #train_list_path = 'data/train_label.txt'
@@ -56,6 +56,7 @@ eigvec = [[-0.5836, -0.6948, 0.4203],
           [-0.5675, 0.7192, 0.4009]]
 
 # ResNet config
+
 block_type = {18: 'basic block',
               34: 'basic block',
               50: 'bottlenect block',
@@ -71,7 +72,6 @@ block_num = {18: (2, 2, 2, 2),
 filter_num = (64, 128, 256, 512)
 
 save_steps = 10
-local_rank = os.getenv('LOCAL_RANK', -1)
 
 tf_config = {
         'cluster': {

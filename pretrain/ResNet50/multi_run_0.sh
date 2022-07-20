@@ -6,12 +6,11 @@ export USE_DDP=1
 export RANK=0
 export LOCAL_RANK=0
 export PLATFORM=tensorflow
-#export LD_LIBRARY_PATH=/home/protago/miniconda3/envs/netmind-tf2/lib:${LD_LIBRARY_PATH}
 export PYTHONPATH=/home/protago/ly/NetMind-Images/NetmindModelEnv/NetmindMixins:${PYTHONPATH}
 #export TIME_ESTIMATE_PROCESS=1
 export MONITOR=tensorboard
-#python test_delete_nmp.py
 echo $PYTHONPATH
+export  ROLE=MASTER
 #CUDA_VISIBLE_DEVICES="0" python test_delete_nmp.py 0 
 CUDA_VISIBLE_DEVICES="0" python test_multi_worker.py  0
 #python test_multi_worker.py  0

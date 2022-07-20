@@ -9,13 +9,10 @@ from utils.data_utils_mm import train_iterator, test_iterator, cnt
 from utils.eval_utils import cross_entropy_batch, correct_num_batch, l2_loss
 from model.ResNet import ResNet
 from NetmindMixins.Netmind import nmp, NetmindDistributedModel, NetmindOptimizer, NetmindDistributedModel
-import faulthandler
 import sys
-#faulthandler.enable()
-#faulthandler.dump_traceback(file=sys.stderr, all_threads=True)
+from arguments import setup_args
 
-#import cgitb
-#cgitb.enable(format='text')
+args = setup_args()
 
 os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
 physical_devices = tf.config.list_physical_devices('GPU')
@@ -69,7 +66,7 @@ def train_step(dist_inputs):
         with tf.GradientTape() as tape:
             prediction = model(images)
             # ce = cross_entropy_batch(labels, prediction, label_smoothing=c.label_smoothing)
-            ce = tf.keras.losses.categorical_crossentropy(labels, prediction, label_smoothing=c.label_smoothing)
+            ce = tf.keras.losses.categorical_crossentropy(labels, prediction, label_smoothing=args.label_smoothing)
             l2 = l2_loss(model)
             # loss = ce + l2
             loss = ce
@@ -105,8 +102,8 @@ def test_step(dist_inputs):
     return mean_loss, acc
 
 def set_input_shape(img, label):
-    img = img.set_shape(c.input_shape)
-    label = label.set_shape([c.category_num])
+    img = img.set_shape(args.input_shape)
+    label = label.set_shape([args.category_num])
     return img, label
 
 ## Using `tf.distribute.Strategy` with custom training loops
@@ -131,7 +128,7 @@ if __name__ == '__main__':
     print('Number of devices: {}'.format(num_gpus))
     nmp.init()
 
-    global_batch_size = c.batch_size *  c.n_workers
+    global_batch_size = args.batch_size *  args.n_workers
 
 # First, we create the model and optimizer inside the strategy's scope. This ensures that any variables created with the model and optimizer are mirrored variables.
 
@@ -139,11 +136,11 @@ if __name__ == '__main__':
 
         model = ResNet(50)
         print('building')
-        model.build(input_shape=(None,) + c.input_shape)
+        model.build(input_shape=(None,) + args.input_shape)
         print('summary...')
         model.summary()
         print('input')
-        inputs = tf.keras.Input(shape=c.input_shape)
+        inputs = tf.keras.Input(shape=args.input_shape)
 
         """
         # load pretrain
@@ -153,10 +150,10 @@ if __name__ == '__main__':
         """
 
         # here we automatically change the iterations per epoch based on number of gpus
-        learning_rate_schedules = CosineDecayWithWarmUP(initial_learning_rate=c.initial_learning_rate * c.n_workers,
-                                                        decay_steps=c.epoch_num * int(c.iterations_per_epoch / c.n_workers)  - int(c.warm_iterations / c.n_workers),
-                                                        alpha=c.minimum_learning_rate * c.n_workers,
-                                                        warm_up_step=int(c.warm_iterations / c.n_workers))
+        learning_rate_schedules = CosineDecayWithWarmUP(initial_learning_rate=args.initial_learning_rate * args.n_workers,
+                                                        decay_steps=c.epoch_num * int(c.iterations_per_epoch / args.n_workers)  - int(c.warm_iterations / args.n_workers),
+                                                        alpha=args.minimum_learning_rate * args.n_workers,
+                                                        warm_up_step=int(c.warm_iterations / args.n_workers))
 
         optimizer = tf.keras.optimizers.SGD(learning_rate=learning_rate_schedules, momentum=0.9)
         print('scope end')
@@ -181,22 +178,22 @@ if __name__ == '__main__':
         dataset_eval = test_iterator().batch(global_batch_size)
         test_data_iterator = iter(multi_worker_mirrored_strategy.experimental_distribute_dataset(dataset_eval))
 
-        nmp.init_train_bar(total_epoch=c.epoch_num, step_per_epoch=c.train_num//c.batch_size)
+        nmp.init_train_bar(total_epoch=c.epoch_num, step_per_epoch=args.train_num//args.batch_size)
 
         t_total = nmp.cur_step
         epochs_trained = nmp.cur_epoch
         print(f'epochs_trained: {epochs_trained}')
         print(f'test.py pid : {os.getpid()} ')
         next_cnt = 0
-        with open(c.log_file, 'a') as f:
+        with open(args.log_file, 'a') as f:
 
             for epoch_num in range(epochs_trained, c.epoch_num):
                 print(f'training with epoch_num : {epoch_num} in range of  {epochs_trained}-------{c.epoch_num}')
 
                 # train
                 sum_ce = 0
-                print(f'in one epoch : loop start in range {c.train_num // global_batch_size}')
-                for i in tqdm(range(int(c.train_num // global_batch_size))):
+                print(f'in one epoch : loop start in range {args.train_num // global_batch_size}')
+                for i in tqdm(range(int(args.train_num // global_batch_size))):
                     if nmp.should_skip_step():
                         continue
                     # for ds in train_data_iterator:
@@ -209,29 +206,29 @@ if __name__ == '__main__':
                     #nmp.step({"loss": loss_ce, "Learning rate": scheduler.get_last_lr()[0]})
                     learing_rate = learning_rate_schedules(i)
                     print(type(learing_rate.numpy()), learing_rate.numpy(), f'current  epoch : {epoch_num}')
-                    final_loss = float((sum_ce / c.train_num).numpy())
+                    final_loss = float((sum_ce / args.train_num).numpy())
                     final_learing_rate = float(learing_rate.numpy())
                     print(f"loss : {final_loss}, type: {type(final_loss)}")
                     print(f"learing_rate : {final_learing_rate}, type: {type(final_learing_rate)}")
                     nmp.step({"loss": final_loss, "Learning rate":final_learing_rate})
                     print('save_pretrained_by_step...')
-                    nmp.save_pretrained_by_step(c.save_steps)
+                    nmp.save_pretrained_by_step(args.save_steps)
 
 
-                print('train: cross entropy loss: {:.4f}\n'.format(sum_ce / c.train_num))
-                f.write('train: cross entropy loss: {:.4f}\n'.format(sum_ce / c.train_num))
+                print('train: cross entropy loss: {:.4f}\n'.format(sum_ce / args.train_num))
+                f.write('train: cross entropy loss: {:.4f}\n'.format(sum_ce / args.train_num))
 
                 # validate
                 sum_ce = 0
                 sum_correct_num = 0
-                for i in tqdm(range(int(c.test_num // global_batch_size))):
+                for i in tqdm(range(int(args.test_num // global_batch_size))):
                     ds = test_data_iterator.get_next()
                     ce, correct_num = test_step(ds)
                     sum_ce += tf.reduce_sum(ce)
                     sum_correct_num +=  tf.reduce_sum(correct_num)
 
-                print('test: cross entropy loss: {:.4f}, accuracy: {:.4f}\n'.format(sum_ce / c.test_num, sum_correct_num / c.test_num))
-                f.write('test: cross entropy loss: {:.4f}, accuracy: {:.4f}\n'.format(sum_ce / c.test_num, sum_correct_num / c.test_num))
+                print('test: cross entropy loss: {:.4f}, accuracy: {:.4f}\n'.format(sum_ce / args.test_num, sum_correct_num / args.test_num))
+                f.write('test: cross entropy loss: {:.4f}, accuracy: {:.4f}\n'.format(sum_ce / args.test_num, sum_correct_num / args.test_num))
 
                 #TODO: netmind already save weights
                 #model.save_weights(c.save_weight_file, save_format='h5')
