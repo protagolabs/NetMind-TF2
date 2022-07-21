@@ -19,5 +19,6 @@ def setup_args():
     parser.add_argument("--initial_learning_rate", default=0.05, type=float)
     parser.add_argument("--minimum_learning_rate", default=0.0001, type=float)
     parser.add_argument("--save_steps", default=100, type=int)
+    parser.add_argument("--epoch_num", default=10, type=int)
 
     return parser.parse_args()
