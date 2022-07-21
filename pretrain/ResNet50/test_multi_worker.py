@@ -146,11 +146,13 @@ if __name__ == '__main__':
             # print('pretrain weight l2 loss:{:.4f}'.format(l2_loss(model)))
         """
 
+        iterations_per_epoch = int(args.train_num / args.batch_size)
+        warm_iterations = iterations_per_epoch
         # here we automatically change the iterations per epoch based on number of gpus
         learning_rate_schedules = CosineDecayWithWarmUP(initial_learning_rate=args.initial_learning_rate * args.n_workers,
-                                                        decay_steps=c.epoch_num * int(c.iterations_per_epoch / args.n_workers)  - int(c.warm_iterations / args.n_workers),
+                                                        decay_steps=args.epoch_num * int(iterations_per_epoch / args.n_workers)  - int(warm_iterations / args.n_workers),
                                                         alpha=args.minimum_learning_rate * args.n_workers,
-                                                        warm_up_step=int(c.warm_iterations / args.n_workers))
+                                                        warm_up_step=int(warm_iterations / args.n_workers))
 
         optimizer = tf.keras.optimizers.SGD(learning_rate=learning_rate_schedules, momentum=0.9)
         print('scope end')
@@ -177,7 +179,7 @@ if __name__ == '__main__':
         dataset_eval = test_iterator(test_data_path=test_data_path).batch(global_batch_size)
         test_data_iterator = iter(multi_worker_mirrored_strategy.experimental_distribute_dataset(dataset_eval))
 
-        nmp.init_train_bar(total_epoch=c.epoch_num, step_per_epoch=args.train_num//args.batch_size)
+        nmp.init_train_bar(total_epoch=args.epoch_num, step_per_epoch=args.train_num//args.batch_size)
 
         t_total = nmp.cur_step
         epochs_trained = nmp.cur_epoch
@@ -186,8 +188,8 @@ if __name__ == '__main__':
         next_cnt = 0
         with open(c.log_file, 'a') as f:
 
-            for epoch_num in range(epochs_trained, c.epoch_num):
-                print(f'training with epoch_num : {epoch_num} in range of  {epochs_trained}-------{c.epoch_num}')
+            for epoch_num in range(epochs_trained, args.epoch_num):
+                print(f'training with epoch_num : {epoch_num} in range of  {epochs_trained}-------{args.epoch_num}')
 
                 # train
                 sum_ce = 0
