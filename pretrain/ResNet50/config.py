@@ -72,11 +72,17 @@ block_num = {18: (2, 2, 2, 2),
 filter_num = (64, 128, 256, 512)
 
 save_steps = 10
-
 tf_config = {
         'cluster': {
-            'worker' : ['192.168.1.23:30000', '192.168.1.15:30001'],
+            'worker' : ['192.168.1.21:30000', '192.168.1.22:30001'],
         },
         'task': {'type': 'worker'}
 }
+"""
+tf_config = {
+        'cluster': {
+            'worker' : ['192.168.1.23:30000'],
+        },
+        'task': {'type': 'worker'}}
+"""
 

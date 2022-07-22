@@ -28,7 +28,7 @@ def setup_args():
     parser.add_argument("--gradient_accumulation_steps", default=1, type=int)
     parser.add_argument("--adam_beta1", default=10, type=float)
     parser.add_argument("--adam_epsilon", default=10, type=float)
-    parser.add_argument("--max_grad_norm", default=True, type=float)
+    parser.add_argument("--max_grad_norm", default=1.0, type=float)
     parser.add_argument("--max_steps", default=9, type=int)
     parser.add_argument("--warmup_ratio", default=1, type=float)
     parser.add_argument("--logging_steps", default=10, type=int)
