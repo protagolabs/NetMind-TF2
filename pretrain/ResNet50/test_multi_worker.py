@@ -1,5 +1,6 @@
 import os
 import json
+import time
 import traceback
 import tensorflow as tf
 from  keras.backend import set_session
@@ -109,13 +110,18 @@ def set_input_shape(img, label):
 ## Using `tf.distribute.Strategy` with custom training loops
 
 if __name__ == '__main__':
-
+    
+    begin = time.time()
     from tensorflow.python.client import device_lib
     print(device_lib.list_local_devices())
     if not os.getenv('TF_CONFIG'):
         c.tf_config['task']['index'] = int(os.getenv('INDEX'))
         os.environ['TF_CONFIG'] = json.dumps(c.tf_config)
-    print(os.environ['TF_CONFIG'])
+    print(os.environ['TF_CONFIG'], type(os.environ['TF_CONFIG']))
+    res = json.loads(os.environ['TF_CONFIG'])
+    print(res, type(res))
+    print(res['task']['index'])
+    print('TF_CONFIG : ', os.environ['TF_CONFIG'])
 
     #allow_memory_growth must be called after  tf.distribute.MultiWorkerMirroredStrategy
     multi_worker_mirrored_strategy = tf.distribute.MultiWorkerMirroredStrategy()
@@ -126,7 +132,7 @@ if __name__ == '__main__':
     num_gpus = multi_worker_mirrored_strategy.num_replicas_in_sync
 
     print('Number of devices: {}'.format(num_gpus))
-    nmp.init()
+    nmp.init(load_checkpoint=False)
 
     n_workers = len(json.loads(os.environ['TF_CONFIG']).get('cluster', {}).get('worker'))
     global_batch_size = args.per_device_train_batch_size *  n_workers
@@ -239,10 +245,10 @@ if __name__ == '__main__':
                 # save intermediate results
                 #if epoch_num % 5 == 4:
                 #    os.system('cp {} {}_epoch_{}.h5'.format(c.save_weight_file, c.save_weight_file.split('.')[0], epoch_num))
-            import time
-            print('begin sleep 15 seconds')
             nmp.finish_training()
-            print(f'training finished... cnt : {cnt}, next_cnt : {next_cnt}')
+            end = time.time()
+    
+            print(f'training finished... cnt : {cnt}, next_cnt : {next_cnt}, cost : {end-begin}')
 
         """In the example above, we iterated over the `dist_dataset` to provide input to your training. We also provide the  `tf.distribute.Strategy.make_experimental_numpy_dataset` to support numpy inputs. You can use this API to create a dataset before calling `tf.distribute.Strategy.experimental_distribute_dataset`.
         Another way of iterating over your data is to explicitly use iterators. You may want to do this when you want to run for a given number of steps as opposed to iterating over the entire dataset.
