@@ -3,7 +3,7 @@ rm -rf checkpoint
 rm -rf tf_non_chief_save/
 export DOMAIN=test
 export PLATFORM=tensorflow
-export JOBID=856ccb06-acbd-46bc-ba80-8e1f7871002b
+export JOBID=eebdcf82-a37b-457e-a5c0-a1f881031d21	
 export USE_DDP=1
 export RANK=0
 export LOCAL_RANK=0
@@ -17,8 +17,8 @@ export INDEX=0
 #CUDA_VISIBLE_DEVICES="0" python test_delete_nmp.py 0 
 CUDA_VISIBLE_DEVICES="0" python test_multi_worker.py  --category_num=1000 \
                           --per_device_train_batch_size=100 --weight_decay=0.0001 --label_smoothing=0.1 --train_num=1300 \
-                          --test_num=300 --learning_rate=0.05 --minimum_learning_rate=0.0001 \
+                          --test_num=50 --learning_rate=0.05 --minimum_learning_rate=0.0001 \
                           --save_steps=2 --data="/data/resnet50/extract" --num_train_epochs=2 --warmup_steps=5 \
                           --do_predict=True --per_device_eval_batch_size=10 --gradient_accumulation_steps=10 \
                           --adam_beta1=10 --adam_epsilon=10 --max_grad_norm=1.0 --max_steps=5 --warmup_ratio=1 \
-                          --logging_steps=10 --fp16=False 
+                          --logging_steps=10 --fp16=False  --model_name_or_path=empty

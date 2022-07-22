@@ -15,6 +15,10 @@ from arguments import setup_args
 
 args = setup_args()
 
+config = tf.compat.v1.ConfigProto()
+config.gpu_options.allow_growth = True
+session = tf.compat.v1.InteractiveSession(config=config)
+
 os.environ["HDF5_USE_FILE_LOCKING"] = "FALSE"
 physical_devices = tf.config.list_physical_devices('GPU')
 for gpu_instance in physical_devices:
@@ -194,6 +198,7 @@ if __name__ == '__main__':
         print(f'epochs_trained: {epochs_trained}')
         print(f'test.py pid : {os.getpid()} ')
         next_cnt = 0
+        epoch_time_cost_list = []
         with open(c.log_file, 'a') as f:
 
             for epoch_num in range(epochs_trained, args.num_train_epochs):
@@ -201,6 +206,7 @@ if __name__ == '__main__':
 
                 # train
                 sum_ce = 0
+                epoch_begin = time.time()
                 print(f'in one epoch : loop start in range {args.train_num // global_batch_size}')
                 for i in tqdm(range(int(args.train_num // global_batch_size))):
                     if nmp.should_skip_step():
@@ -238,6 +244,8 @@ if __name__ == '__main__':
 
                 print('test: cross entropy loss: {:.4f}, accuracy: {:.4f}\n'.format(sum_ce / args.test_num, sum_correct_num / args.test_num))
                 f.write('test: cross entropy loss: {:.4f}, accuracy: {:.4f}\n'.format(sum_ce / args.test_num, sum_correct_num / args.test_num))
+                epoch_end = time.time()
+                epoch_time_cost_list.append(epoch_end - epoch_begin)	
 
                 #TODO: netmind already save weights
                 #model.save_weights(c.save_weight_file, save_format='h5')
@@ -248,7 +256,7 @@ if __name__ == '__main__':
             nmp.finish_training()
             end = time.time()
     
-            print(f'training finished... cnt : {cnt}, next_cnt : {next_cnt}, cost : {end-begin}')
+            print(f'training finished... cnt : {cnt}, next_cnt : {next_cnt}, total cost : {end-begin}, epoch_time_cost_list : {epoch_time_cost_list}')
 
         """In the example above, we iterated over the `dist_dataset` to provide input to your training. We also provide the  `tf.distribute.Strategy.make_experimental_numpy_dataset` to support numpy inputs. You can use this API to create a dataset before calling `tf.distribute.Strategy.experimental_distribute_dataset`.
         Another way of iterating over your data is to explicitly use iterators. You may want to do this when you want to run for a given number of steps as opposed to iterating over the entire dataset.
