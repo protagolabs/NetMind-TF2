@@ -198,6 +198,7 @@ if __name__ == '__main__':
         logger.info(f'epochs_trained: {epochs_trained}')
         next_cnt = 0
         epoch_time_cost_list = []
+        program_finish = []
         with open(c.log_file, 'a') as f:
 
             for epoch_num in range(epochs_trained, args.num_train_epochs):
@@ -207,6 +208,8 @@ if __name__ == '__main__':
                 sum_ce = 0
                 epoch_begin = time.time()
                 logger.info(f'in one epoch : loop start in range {args.train_num // global_batch_size}')
+                if len(program_finish) == 1:
+                    break
                 for i in tqdm(range(int(args.train_num // global_batch_size))):
                     if nmp.should_skip_step():
                         continue
@@ -223,7 +226,10 @@ if __name__ == '__main__':
                     final_learing_rate = float(learing_rate.numpy())
                     logger.info(f"loss : {final_loss}, type: {type(final_loss)}")
                     logger.info(f"learing_rate : {final_learing_rate}, type: {type(final_learing_rate)}")
-                    nmp.step({"loss": final_loss, "Learning rate":final_learing_rate})
+                    nmp.step({"loss": final_loss, "Learning rate":final_learing_rate}, program_finish)
+                    if len(program_finish) == 1:
+                        logger.info('estimate training process finish,  exit early') 
+                        break 
                     logger.info(f'save_pretrained_by_step : {args.save_steps}')
                     nmp.save_pretrained_by_step(args.save_steps)
 
@@ -251,7 +257,8 @@ if __name__ == '__main__':
                 # save intermediate results
                 #if epoch_num % 5 == 4:
                 #    os.system('cp {} {}_epoch_{}.h5'.format(c.save_weight_file, c.save_weight_file.split('.')[0], epoch_num))
-            nmp.finish_training()
+            if len(program_finish) != 1:
+                nmp.finish_training()
             end = time.time()
 
             logger.info(f'training finished... cnt : {cnt}, next_cnt : {next_cnt}, total cost : {end-begin}, epoch_time_cost_list : {epoch_time_cost_list}')

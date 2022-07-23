@@ -12,7 +12,8 @@ export PYTHONPATH=/home/protago/ly/NetMind-Images/NetmindModelEnv/NetmindMixins:
 export MONITOR=wandb
 echo $PYTHONPATH
 export INDEX=1
-#CUDA_VISIBLE_DEVICES="0" python test_delete_nmp.py 0
+export TIME_ESTIMATE_PROCESS=1
+export TIME_ESTIMATE_BATCH=20
 CUDA_VISIBLE_DEVICES="1" python test_multi_worker.py  --category_num=1000 \
                           --per_device_train_batch_size=100 --weight_decay=0.0001 --label_smoothing=0.1 --train_num=1300 \
                           --test_num=50 --learning_rate=0.05 --minimum_learning_rate=0.0001 \
