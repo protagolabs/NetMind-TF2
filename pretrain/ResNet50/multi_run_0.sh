@@ -3,7 +3,7 @@ rm -rf checkpoint
 rm -rf tf_non_chief_save/
 export DOMAIN=test
 export PLATFORM=tensorflow
-export JOBID=eebdcf82-a37b-457e-a5c0-a1f881031d21	
+export JOBID=06cefa0e-2d5c-4346-b02e-9abb507023f5		
 export USE_DDP=1
 export RANK=0
 export LOCAL_RANK=0

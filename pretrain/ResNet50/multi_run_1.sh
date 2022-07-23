@@ -2,7 +2,7 @@ lsof -i:30001 | awk -F ' ' '{ if (NR>1) {print($2)}}' | xargs kill -9
 rm -rf checkpoint
 export DOMAIN=test
 export PLATFORM=tensorflow
-export JOBID=eebdcf82-a37b-457e-a5c0-a1f881031d21		
+export JOBID=06cefa0e-2d5c-4346-b02e-9abb507023f5		
 export USE_DDP=1
 export RANK=1
 export LOCAL_RANK=1

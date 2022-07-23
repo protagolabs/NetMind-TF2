@@ -191,7 +191,7 @@ if __name__ == '__main__':
         dataset_eval = test_iterator(test_data_path=test_data_path).batch(global_batch_size)
         test_data_iterator = iter(multi_worker_mirrored_strategy.experimental_distribute_dataset(dataset_eval))
 
-        nmp.init_train_bar(total_epoch=args.num_train_epochs, step_per_epoch=args.train_num//args.per_device_train_batch_size)
+        nmp.init_train_bar(total_epoch=args.num_train_epochs, step_per_epoch=args.train_num//global_batch_size)
 
         t_total = nmp.cur_step
         epochs_trained = nmp.cur_epoch
