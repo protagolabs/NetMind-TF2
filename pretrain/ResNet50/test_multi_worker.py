@@ -192,6 +192,7 @@ if __name__ == '__main__':
         test_data_iterator = iter(multi_worker_mirrored_strategy.experimental_distribute_dataset(dataset_eval))
 
         nmp.init_train_bar(total_epoch=args.num_train_epochs, step_per_epoch=args.train_num//global_batch_size)
+        nmp.init_eval_bar(total_epoch=args.num_train_epochs)
 
         t_total = nmp.cur_step
         epochs_trained = nmp.cur_epoch
@@ -239,9 +240,14 @@ if __name__ == '__main__':
                     ce, correct_num = test_step(ds)
                     sum_ce += tf.reduce_sum(ce)
                     sum_correct_num +=  tf.reduce_sum(correct_num)
+                eval_ce = sum_ce / args.test_num
+                eval_accuracy = sum_correct_num / args.test_num
+                logger.info(f' mean ce : {eval_ce} type: {type(eval_ce)}, mean correct :{eval_accuracy} type: {type(eval_accuracy)}')
+                logger.info('test: cross entropy loss: {:.4f}, accuracy: {:.4f}\n'.format(eval_ce, eval_accuracy))
+                f.write('test: cross entropy loss: {:.4f}, accuracy: {:.4f}\n'.format(eval_ce, eval_accuracy))
 
-                logger.info('test: cross entropy loss: {:.4f}, accuracy: {:.4f}\n'.format(sum_ce / args.test_num, sum_correct_num / args.test_num))
-                f.write('test: cross entropy loss: {:.4f}, accuracy: {:.4f}\n'.format(sum_ce / args.test_num, sum_correct_num / args.test_num))
+                nmp.evaluate({'cross entropy loss': float(0.10000000149011612), 'accuracy':float(eval_accuracy)}) 
+                
                 epoch_end = time.time()
                 epoch_time_cost_list.append(epoch_end - epoch_begin)
 
