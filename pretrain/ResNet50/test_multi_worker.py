@@ -119,7 +119,7 @@ def set_input_shape(img, label):
 ## Using `tf.distribute.Strategy` with custom training loops
 
 if __name__ == '__main__':
-
+    
     begin = time.time()
     from tensorflow.python.client import device_lib
     logger.info(device_lib.list_local_devices())
@@ -246,7 +246,7 @@ if __name__ == '__main__':
                 logger.info('test: cross entropy loss: {:.4f}, accuracy: {:.4f}\n'.format(eval_ce, eval_accuracy))
                 f.write('test: cross entropy loss: {:.4f}, accuracy: {:.4f}\n'.format(eval_ce, eval_accuracy))
 
-                nmp.evaluate({'cross entropy loss': float(0.10000000149011612), 'accuracy':float(eval_accuracy)}) 
+                nmp.evaluate({'cross-entropy-loss': eval_ce, 'eval-accuracy':eval_accuracy}) 
                 
                 epoch_end = time.time()
                 epoch_time_cost_list.append(epoch_end - epoch_begin)
