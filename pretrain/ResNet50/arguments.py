@@ -34,5 +34,7 @@ def setup_args():
     parser.add_argument("--warmup_ratio", default=1, type=float)
     parser.add_argument("--logging_steps", default=10, type=int)
     parser.add_argument("--fp16", default=False, type=bool)
+    parser.add_argument("--train_list_path", default="data/train_test.txt", type=str)
+    parser.add_argument("--test_list_path", default="data/validation_test.txt", type=str)
 
     return parser.parse_args()

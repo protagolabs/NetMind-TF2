@@ -181,14 +181,16 @@ if __name__ == '__main__':
         #    # train_step(inputs)
         # train_iterator = train_iterator.map(set_input_shape)
         train_data_path = args.data + "/train"
-        dataset_train = train_iterator(train_data_path=train_data_path).batch(global_batch_size)
+        train_list_path = args.train_list_path
+        dataset_train = train_iterator(list_path=train_list_path, train_data_path=train_data_path).batch(global_batch_size)
         train_data_iterator = iter(multi_worker_mirrored_strategy.experimental_distribute_dataset(dataset_train))
 
 
         NetmindDistributedModel(model)
         #  eval
         test_data_path = args.data + "/val"
-        dataset_eval = test_iterator(test_data_path=test_data_path).batch(global_batch_size)
+        test_list_path = args.test_list_path
+        dataset_eval = test_iterator(list_path=test_list_path, test_data_path=test_data_path).batch(global_batch_size)
         test_data_iterator = iter(multi_worker_mirrored_strategy.experimental_distribute_dataset(dataset_eval))
 
         nmp.init_train_bar(total_epoch=args.num_train_epochs, step_per_epoch=args.train_num//global_batch_size)

@@ -20,6 +20,6 @@ CUDA_VISIBLE_DEVICES="1" python test_multi_worker.py  --category_num=1000 \
                           --save_steps=2 --data="/data/resnet50/extract" --num_train_epochs=2 --warmup_steps=5 \
                           --do_predict=True --per_device_eval_batch_size=10 --gradient_accumulation_steps=10 \
                           --adam_beta1=10 --adam_epsilon=10 --max_grad_norm=1.0 --max_steps=5 --warmup_ratio=1 \
-                          --logging_steps=10 --fp16=False --model_name_or_path=empty
+                          --logging_steps=10 --fp16=False --model_name_or_path=empty --train_list_path=data/train_test.txt --test_list_path=data/validation_test.txt
 
 #python test_multi_worker.py  0
