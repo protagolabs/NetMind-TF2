@@ -18,8 +18,14 @@ source ~/.bashrc
 #
 
 # update miniconda to latest (optional)
+```bash
 conda update --force conda
+```
 #
+
+# install the tensorflow and some other deps following the install-deps.sh
+### we recommend to install line-by-line by yourself.
+
 
 This different categories could be found in corresponding directory: 
 
@@ -29,7 +35,6 @@ finetune
 
 etc..
 
-### you can create the conda envirment with the help of install-deps.sh
 
 ## Acknowledgement ##
 [Huggingface Transformers Language Modeling](https://github.com/huggingface/transformers/blob/master/examples/tensorflow/language-modeling/run_clm.py)

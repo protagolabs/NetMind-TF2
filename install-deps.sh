@@ -18,6 +18,7 @@ export LD_LIBRARY_PATH=/home/xing/miniconda3/envs/netmind-tf2/lib:${LD_LIBRARY_P
 
 # load again
 source ~/.bashrc
+
 conda activate netmind-tf2
 
 # install tensorflow-gpu
