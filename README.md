@@ -1,6 +1,26 @@
 # NetMind-Models-TF2
 We develop the netmind platform in tensorflow 2
 
+## install conda
+```bash
+wget https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
+```
+```bash
+bash Miniconda3-latest-Linux-x86_64.sh
+```
+
+#
+
+# load miniconda init
+```bash
+source ~/.bashrc
+```
+#
+
+# update miniconda to latest (optional)
+conda update --force conda
+#
+
 This different categories could be found in corresponding directory: 
 
 pretrain 
