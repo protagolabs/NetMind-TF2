@@ -1,0 +1,1 @@
+test: cross entropy loss: 1.0514, l2 loss: 0.3938, accuracy: 0.7573
