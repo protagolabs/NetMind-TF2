@@ -7,6 +7,7 @@ import os
 import args
 import datasets
 import numpy as np
+import config as c
 # from datasets import load_dataset
 from transformers import create_optimizer, TFAutoModelForMaskedLM
 from functools import partial
@@ -115,8 +116,13 @@ def mask_tokens(inputs, mlm_probability, tokenizer, special_tokens_mask):
 
 
 if __name__ == '__main__':
+    from tensorflow.python.client import device_lib
 
-    nmp.init(load_checkpoint=False)
+    logger.info(device_lib.list_local_devices())
+    if not os.getenv('TF_CONFIG'):
+        c.tf_config['task']['index'] = int(os.getenv('INDEX'))
+        os.environ['TF_CONFIG'] = json.dumps(c.tf_config)
+
     n_workers = len(json.loads(os.environ['TF_CONFIG']).get('cluster', {}).get('worker'))
     global_batch_size = args.per_device_train_batch_size * n_workers
 
