@@ -13,10 +13,11 @@ export  ROLE=master
 export INDEX=0
 #export TIME_ESTIMATE_PROCESS=1
 #export TIME_ESTIMATE_BATCH=20
-CUDA_VISIBLE_DEVICES="0" python test_multi_worker.py  --category_num=1000 \
+entry_point=train_netmind.py
+CUDA_VISIBLE_DEVICES="0" python $entry_point  --category_num=1000 \
                           --per_device_train_batch_size=100 --label_smoothing=0.1 --train_num=12811 \
                           --test_num=500  --minimum_learning_rate=0.0001 \
-                          --save_steps=2 --data="/data/resnet50" --warmup_steps=5 \
+                          --save_steps=2  --warmup_steps=5 \
                           --do_predict=True  --gradient_accumulation_steps=10 \
                           --adam_beta1=10 --adam_epsilon=10 --max_grad_norm=1.0 --max_steps=5 --warmup_ratio=1 \
                           --logging_steps=10 --fp16=False  --train_list_path=data/train_test.txt --test_list_path=data/validation_test.txt \
