@@ -1,0 +1,161 @@
+[2022-07-26 22:32:54] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:54] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+input (None, 224, 224, 3)
+conv0 (None, 112, 112, 64)
+max-pooling (None, 56, 56, 64)
+[2022-07-26 22:32:54] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:54] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:54] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:54] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+conv1_0 (None, 56, 56, 256)
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+conv1_1 (None, 56, 56, 256)
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+conv1_2 (None, 56, 56, 256)
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+conv2_0 (None, 28, 28, 512)
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+conv2_1 (None, 28, 28, 512)
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+conv2_2 (None, 28, 28, 512)
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+conv2_3 (None, 28, 28, 512)
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+conv3_0 (None, 14, 14, 1024)
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:55] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+conv3_1 (None, 14, 14, 1024)
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+conv3_2 (None, 14, 14, 1024)
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+conv3_3 (None, 14, 14, 1024)
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+conv3_4 (None, 14, 14, 1024)
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+conv3_5 (None, 14, 14, 1024)
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+conv4_0 (None, 7, 7, 2048)
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+conv4_1 (None, 7, 7, 2048)
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+[2022-07-26 22:32:56] [INFO] cross_device_ops.py:1152 Collective all_reduce tensors: 1 all_reduces, num_devices = 1, group_size = 2, implementation = CommunicationImplementation.AUTO, num_packs = 1
+conv4_2 (None, 7, 7, 2048)
+global average-pooling (None, 2048)
+fully connected (None, 1000)
+Model: "res_net"
+_________________________________________________________________
+ Layer (type)                Output Shape              Param #
+=================================================================
+ conv0 (Conv2D)              multiple                  9408
+ bn (BatchNormalization)     multiple                  256
+ conv1_0 (BottleneckBlock)   multiple                  76288
+ conv1_1 (BottleneckBlock)   multiple                  71168
+ conv1_2 (BottleneckBlock)   multiple                  71168
+ conv2_0 (BottleneckBlock)   multiple                  381952
+ conv2_1 (BottleneckBlock)   multiple                  281600
+ conv2_2 (BottleneckBlock)   multiple                  281600
+ conv2_3 (BottleneckBlock)   multiple                  281600
+ conv3_0 (BottleneckBlock)   multiple                  1517568
+ conv3_1 (BottleneckBlock)   multiple                  1120256
+ conv3_2 (BottleneckBlock)   multiple                  1120256
+ conv3_3 (BottleneckBlock)   multiple                  1120256
+ conv3_4 (BottleneckBlock)   multiple                  1120256
+ conv3_5 (BottleneckBlock)   multiple                  1120256
+ conv4_0 (BottleneckBlock)   multiple                  6049792
+ conv4_1 (BottleneckBlock)   multiple                  4468736
+ conv4_2 (BottleneckBlock)   multiple                  4468736
+ global_average_pooling2d (G  multiple                 0
+ lobalAveragePooling2D)
+ fully_connected (Dense)     multiple                  2048000
+=================================================================
+Total params: 25,609,152
+Trainable params: 25,556,032
+Non-trainable params: 53,120
+_________________________________________________________________
+[2022-07-26 22:32:56] [INFO] test_multi_worker.py:170 scope end
+[2022-07-26 22:32:57] [INFO] test_multi_worker.py:201 epochs_trained: 0
+[2022-07-26 22:32:57] [INFO] test_multi_worker.py:207 training with epoch_num : 0 in range of  0-------2
+[2022-07-26 22:32:57] [INFO] test_multi_worker.py:212 in one epoch : loop start in range 64
