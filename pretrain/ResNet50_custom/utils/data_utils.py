@@ -3,6 +3,7 @@ import numpy as np
 import os
 import cv2
 from utils.aug_utils import *
+import random
 
 def load_list(list_path, image_root_path):
     images = []
@@ -12,15 +13,35 @@ def load_list(list_path, image_root_path):
             line = line.replace('\n', '').split(' ')
             images.append(os.path.join(image_root_path, line[0]))
             labels.append(int(line[1]))
+
+    # indx = np.random.choice(len(images),3,False)
+
+    # print(images[:5000])
+    # pairs = list(zip(images, labels))
+    # pairs = random.sample(pairs, 5000)
+    # images, labels = zip(*pairs)
+
+    # images = images[:c.train_num]
+    # labels = labels[:c.train_num]
+    # print(images)
+    # print(labels)
     return images, labels
 
+image_cnt = 0
 def load_image(image_path, label, augment=False, crop_10=False):
     """
     In training, it is highly recommended to set the augment to true.
     In test, the standard 10-crop test [1] is provided for fair comparison.
     [1] K. He, X. Zhang, S. Ren, and J. Sun. Deep residual learning for image recognition. In CVPR, 2016.
     """
-    image = cv2.imread(image_path.numpy().decode()).astype(np.float32)
+    try:
+        image = cv2.imread(image_path.numpy().decode()).astype(np.float32)
+        print(f'handling image : {image}')
+        image_cnt += 1
+    except:
+        #raise Exception(f"imread failed, path:{image_path}")
+        print(f"imread failed, path:{image_path}")
+        return None, None
 
     if augment:
         image = random_aspect(image)
@@ -40,7 +61,6 @@ def load_image(image_path, label, augment=False, crop_10=False):
 
     label_one_hot = np.zeros(c.category_num)
     label_one_hot[label] = 1.0
-    # label_one_hot = label
 
     return image, label_one_hot
 
@@ -50,17 +70,19 @@ def train_iterator(list_path=c.train_list_path):
     dataset = dataset.shuffle(len(images))
     dataset = dataset.repeat()
     dataset = dataset.map(lambda x, y: tf.py_function(load_image, inp=[x, y, True, False], Tout=[tf.float32, tf.float32]),
-                          num_parallel_calls=tf.data.experimental.AUTOTUNE, deterministic=False)
-    return dataset
+                          num_parallel_calls=tf.data.experimental.AUTOTUNE)
+    dataset = dataset.batch(c.batch_size, drop_remainder=True)
+    it = dataset.__iter__()
+    return it
 
 def test_iterator(list_path=c.test_list_path):
     images, labels = load_list(list_path, c.test_data_path)
     dataset = tf.data.Dataset.from_tensor_slices((images, labels))
-    dataset = dataset.repeat()
     dataset = dataset.map(lambda x, y: tf.py_function(load_image, inp=[x, y, False, False], Tout=[tf.float32, tf.float32]),
-                          num_parallel_calls=tf.data.experimental.AUTOTUNE, deterministic=False)
-
-    return dataset
+                          num_parallel_calls=tf.data.experimental.AUTOTUNE)
+    dataset = dataset.batch(c.batch_size)
+    it = dataset.__iter__()
+    return it
 
 def test_10_crop_iterator(list_path=c.test_list_path):
     images, labels = load_list(list_path, c.test_data_path)
@@ -70,13 +92,13 @@ def test_10_crop_iterator(list_path=c.test_list_path):
     it = dataset.__iter__()
     return it
 
-# if __name__ == '__main__':
-#     # Annotate the 'normalize' function for visualization
-#     # it = train_iterator()
-#     it = test_10_crop_iterator('../data/validation_label.txt')
-#     images, labels = it.next()
-#     # print(np.shape(images), np.shape(labels))
-#     for i in range(10):
-#         print(np.where(labels[i].numpy() != 0))
-#         cv2.imshow('show', images[i].numpy().astype(np.uint8))
-#         cv2.waitKey(0)
+if __name__ == '__main__':
+    # Annotate the 'normalize' function for visualization
+    # it = train_iterator()
+    it = test_10_crop_iterator('../data/validation_label.txt')
+    images, labels = it.next()
+    # print(np.shape(images), np.shape(labels))
+    for i in range(10):
+        print(np.where(labels[i].numpy() != 0))
+        cv2.imshow('show', images[i].numpy().astype(np.uint8))
+        cv2.waitKey(0)
