@@ -17,7 +17,6 @@ def setup_args():
     parser.add_argument('--train_num', default=100, type=int, required=False, help='')
     parser.add_argument("--test_num", default=100, type=int, required=False, help='use distributed training')
     # adv
-
     parser.add_argument("--minimum_learning_rate", default=0.0001, type=float)
     parser.add_argument("--save_steps", default=100, type=int)
     parser.add_argument("--warmup_steps", default=10, type=int)
