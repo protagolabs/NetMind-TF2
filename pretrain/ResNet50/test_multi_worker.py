@@ -196,7 +196,6 @@ if __name__ == '__main__':
         nmp.init_train_bar(total_epoch=args.num_train_epochs, step_per_epoch=args.train_num//global_batch_size)
         nmp.init_eval_bar(total_epoch=args.num_train_epochs)
 
-        t_total = nmp.cur_step
         epochs_trained = nmp.cur_epoch
         logger.info(f'epochs_trained: {epochs_trained}')
         next_cnt = 0
