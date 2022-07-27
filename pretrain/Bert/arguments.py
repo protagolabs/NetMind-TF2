@@ -7,9 +7,8 @@ def setup_args():
     设置训练参数
     """
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model_name_or_path', default='roberta-base', type=str, required=False, help='')
     parser.add_argument('--do_train', default=True, type=bool, required=False, help='')
-    parser.add_argument('--data', default=os.getenv("DATA_LOCATION"), type=str, required=True, help='')
+    parser.add_argument('--data', default=os.getenv("DATA_LOCATION"), type=str, required=False, help='')
     parser.add_argument('--category_num', default=1000, type=int, required=False, help='')
     parser.add_argument('--per_device_train_batch_size', default=16, type=int, required=False, help='')
 
@@ -46,6 +45,6 @@ def setup_args():
     parser.add_argument("--overwrite_cache", default=True, type=bool)
     parser.add_argument("--config_name", default="bert-base-uncased", type=str)
     parser.add_argument("--tokenizer_name", default="bert-base-uncased", type=str)
-    parser.add_argument("--model_name_or_path", default="", type=str)
+    parser.add_argument('--model_name_or_path', default='roberta-base', type=str, required=False, help='')
 
     return parser.parse_args()

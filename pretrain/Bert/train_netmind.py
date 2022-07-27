@@ -4,7 +4,6 @@ import tensorflow as tf
 import random
 import logging
 import os
-import args
 import datasets
 import numpy as np
 import config as c
