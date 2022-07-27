@@ -1,5 +1,5 @@
 NetMind-Models-TF2
-We develop the netmind platform in tensorflow 2
+We develop the netmind platform in tensorflow2
 
 # install conda
 
