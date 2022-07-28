@@ -284,7 +284,7 @@ with tf.distribute.MirroredStrategy().scope():
         return tf.reduce_mean(y_pred)
 
 
-    model.compile(optimizer=optimizer, loss={"loss": dummy_loss})
+    model.compile(optimizer=optimizer, loss={"output_1": dummy_loss})
     # endregion
 
     # region Training

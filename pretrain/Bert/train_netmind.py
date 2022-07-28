@@ -40,6 +40,8 @@ class SavePretrainedCallback(tf.keras.callbacks.Callback):
     def on_train_begin(self, logs=None):
         logger.info(f'log : {logs}')
         # here we init train&eval bar
+        nmp.init(load_checkpoint=False)
+        NetmindDistributedModel(self.model)
         nmp.init_train_bar(total_epoch=args.num_train_epochs, step_per_epoch=batches_per_epoch)
         nmp.init_eval_bar(total_epoch=args.num_train_epochs)
         epochs_trained = nmp.cur_epoch
@@ -56,8 +58,14 @@ class SavePretrainedCallback(tf.keras.callbacks.Callback):
 
     def on_train_batch_end(self, batch, logs=None):
         logger.info(f'batch : {batch} , log : {logs}')
+        
+        learning_rate = self.model.optimizer.learning_rate(self.model.optimizer.iterations.numpy())
+         
+        learning_rate  = tf.keras.backend.get_value(learning_rate)
+        logger.info(f'learning_rate : {learning_rate}')
+        
         nmp.step({"loss": float(logs['loss']),
-                  "Learning rate": float(tf.keras.backend.get_value(self.model.optimizer.learning_rate))})
+                  "Learning rate": float(learning_rate)})
         logger.info(f'save_pretrained_by_step : {args.save_steps}')
         nmp.save_pretrained_by_step(args.save_steps)
 
@@ -128,6 +136,7 @@ if __name__ == '__main__':
         os.environ['TF_CONFIG'] = json.dumps(c.tf_config)
 
     n_workers = len(json.loads(os.environ['TF_CONFIG']).get('cluster', {}).get('worker'))
+    logger.info(f'c.tf_config : {c.tf_config}')
     global_batch_size = args.per_device_train_batch_size * n_workers
 
     logdir = "logs/bert_scalars/" + datetime.now().strftime("%Y%m%d-%H%M%S")
@@ -330,7 +339,8 @@ if __name__ == '__main__':
             return tf.reduce_mean(y_pred)
 
 
-        model.compile(optimizer=optimizer, loss={"loss": dummy_loss})
+        #model.compile(optimizer=optimizer, loss={"loss": dummy_loss})
+        model.compile(optimizer=optimizer, loss={"output_1": dummy_loss})
         # endregion
 
         # region Training
@@ -342,6 +352,8 @@ if __name__ == '__main__':
             steps_per_epoch=len(train_dataset) // (args.per_device_train_batch_size * n_workers),
             callbacks=[SavePretrainedCallback(output_dir=args.output_dir), tensorboard_callback],
         )
-
+        
+        """
         if args.output_dir is not None:
             model.save_pretrained(args.output_dir)
+        """

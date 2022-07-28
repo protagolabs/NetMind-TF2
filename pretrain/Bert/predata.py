@@ -21,6 +21,7 @@ print(bookcorpus)
 raw_datasets = datasets.concatenate_datasets([bookcorpus['train'],wikipedia['train']])
 # raw_datasets = bookcorpus['train']
 print(raw_datasets)
+raw_datasets = raw_datasets.select(list(range(10000)))
 
 
 if tokenizer_name:
