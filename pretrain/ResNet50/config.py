@@ -1,5 +1,6 @@
 import os
 # Training config
+category_num = 1000
 input_shape = (224, 224, 3)
 weight_decay = 1e-4
 label_smoothing = 0.1
@@ -29,6 +30,8 @@ eigvec = [[-0.5836, -0.6948, 0.4203],
           [-0.5808, -0.0045, -0.8140],
           [-0.5675, 0.7192, 0.4009]]
 
+train_list_path = 'data/train_test.txt'
+test_list_path  = 'data/validation_test.txt'
 # ResNet config
 
 block_type = {18: 'basic block',
