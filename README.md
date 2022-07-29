@@ -23,16 +23,16 @@ conda update --force conda
 # install the tensorflow and some other deps
 * create netmind-tf2 env
 ```bash
-conda create --name netmind-tf2 python=3.10
+conda create --name tf2 python=3.9
 ```
 * load enviroment
 ```bash
-conda activate netmind-tf2
+conda activate tf2
 ```
 
 * install the cuda and cudnn
 ```bash
-conda install -c anaconda cudnn
+conda install -c conda-forge cudatoolkit=11.2 cudnn=8.1.0
 ```
 
 * add cuda/cudnn to path, otherwise you will meet issue when running tensorflow as: Could not load dynamic library 'libcudart.so.11.0'; dlerror: libcudart.so.11.0: cannot open shared object file: No such file or directory
@@ -41,8 +41,8 @@ nano ~/.bashrc
 ```
 * add the following cuda/cudnn path to the end, change "your_home_dir".
 ```
-export PATH=/your_home_dir/xing/miniconda3/envs/netmind-tf2/lib:${PATH:+:${PATH}}
-export LD_LIBRARY_PATH=/your_home_dir/miniconda3/envs/netmind-tf2/lib:${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
+export PATH=/your_home_dir/miniconda3/envs/tf2/lib:${PATH:+:${PATH}}
+export LD_LIBRARY_PATH=/your_home_dir/miniconda3/envs/tf2/lib:${LD_LIBRARY_PATH:+:${LD_LIBRARY_PATH}}
 ```
 
 * load again
@@ -50,11 +50,22 @@ export LD_LIBRARY_PATH=/your_home_dir/miniconda3/envs/netmind-tf2/lib:${LD_LIBRA
 source ~/.bashrc
 ```
 ```bash
-conda activate netmind-tf2
+conda activate tf2
 ```
 * install tensorflow-gpu
 ```bash
-pip install tensorflow-gpu
+pip install tensorflow-gpu==2.9.1
+```
+#
+
+# test your install
+```bash
+wget https://download.microsoft.com/download/3/E/1/3E1C3F21-ECDB-4869-8368-6DEBA77B919F/kagglecatsanddogs_5340.zip
+unzip -q kagglecatsanddogs_5340.zip
+```
+
+```python
+python test_example.py
 ```
 #
 
