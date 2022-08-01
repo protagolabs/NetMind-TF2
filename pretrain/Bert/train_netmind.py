@@ -38,7 +38,7 @@ class SavePretrainedCallback(tf.keras.callbacks.Callback):
         self.epoch = 0
 
     def on_train_begin(self, logs=None):
-        logger.info(f'log : {logs}')
+        logger.info(f'on_train_begin : log : {logs}')
         # here we init train&eval bar
         nmp.init(load_checkpoint=False)
         NetmindDistributedModel(self.model)
@@ -57,7 +57,7 @@ class SavePretrainedCallback(tf.keras.callbacks.Callback):
             return
 
     def on_train_batch_end(self, batch, logs=None):
-        logger.info(f'batch : {batch} , log : {logs}')
+        logger.info(f'on_train_batch_end : batch : {batch} , log : {logs}')
         
         learning_rate = self.model.optimizer.learning_rate(self.model.optimizer.iterations.numpy())
          
@@ -352,8 +352,9 @@ if __name__ == '__main__':
             steps_per_epoch=len(train_dataset) // (args.per_device_train_batch_size * n_workers),
             callbacks=[SavePretrainedCallback(output_dir=args.output_dir), tensorboard_callback],
         )
+    if os.getenv('INDEX') == '1':
+        print('sleep 15')
+        import time
+    print('end of bert')
+
         
-        """
-        if args.output_dir is not None:
-            model.save_pretrained(args.output_dir)
-        """
