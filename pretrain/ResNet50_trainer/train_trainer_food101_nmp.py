@@ -120,6 +120,8 @@ if __name__ == '__main__':
         embeddings_metadata=None,
     )
 
+    #### we add the nmp callback here ###
+
     model_callback = tf.keras.callbacks.ModelCheckpoint(
         filepath='tb_logs/resnet50/checkpoints/', 
         monitor='evaluation_categorical_accuracy_vs_iterations',
