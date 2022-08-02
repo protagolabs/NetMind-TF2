@@ -254,7 +254,7 @@ if __name__ == '__main__':
         def dummy_loss(y_true, y_pred):
             return tf.reduce_mean(y_pred)
 
-        model.compile(optimizer=optimizer, loss={"loss": dummy_loss})
+        model.compile(optimizer=optimizer, loss={"output_1": dummy_loss})
         # endregion
 
 
