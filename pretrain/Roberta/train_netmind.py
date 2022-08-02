@@ -1,33 +1,31 @@
 from os import makedirs
 from numpy.lib.histograms import histogram
-from transformers import AutoTokenizer, AutoConfig
-import tensorflow as tf
+import sys
+import math
+import time
 import datasets
-from datasets import load_dataset
-from transformers import create_optimizer, TFAutoModelForMaskedLM, AdamWeightDecay
-from functools import partial
 import numpy as np
 import logging
-import math
-# from sklearn.model_selection import train_test_split
 import random
-from datetime import datetime
 import transformers
-import time
+import tensorflow as tf
+from datetime import datetime
+from functools import partial
+from datasets import load_dataset
+from transformers import AutoTokenizer, AutoConfig
+from transformers import create_optimizer, TFAutoModelForMaskedLM, AdamWeightDecay
+from NetmindMixins.Netmind import nmp, NetmindDistributedModel, NetmindOptimizer, NetmindDistributedModel
+from arguments import setup_args
 
+args = setup_args()
+
+logger = logging.getLogger()
+formatter = logging.Formatter('[%(asctime)s] [%(levelname)s] %(filename)s:%(lineno)d %(message)s', '%Y-%m-%d %H:%M:%S')
+console_handler = logging.StreamHandler(sys.stdout)
+console_handler.formatter = formatter
+logger.addHandler(console_handler)
+logger.setLevel(logging.INFO)
 # from transformers.utils.dummy_tf_objects import AdamWeightDecay
-
-
-# class SavePretrainedCallback(tf.keras.callbacks.Callback):
-#     # Hugging Face models have a save_pretrained() method that saves both the weights and the necessary
-#     # metadata to allow them to be loaded as a pretrained model in future. This is a simple Keras callback
-#     # that saves the model with this method after each epoch.
-#     def __init__(self, output_dir, **kwargs):
-#         super().__init__()
-#         self.output_dir = output_dir
-
-#     def on_epoch_end(self, epoch, logs={}):
-#         self.model.save_pretrained(self.output_dir+"/checkpoint_epoch{}".format(epoch))
 
 class SavePretrainedCallback(tf.keras.callbacks.Callback):
     # Hugging Face models have a save_pretrained() method that saves both the weights and the necessary
@@ -38,16 +36,41 @@ class SavePretrainedCallback(tf.keras.callbacks.Callback):
         self.output_dir = output_dir
         self.epoch = 0
 
+    def on_train_begin(self, logs=None):
+        logger.info(f'on_train_begin : log : {logs}')
+        # here we init train&eval bar
+        nmp.init(load_checkpoint=False)
+        NetmindDistributedModel(self.model)
+        nmp.init_train_bar(total_epoch=args.num_train_epochs, step_per_epoch=batches_per_epoch)
+        nmp.init_eval_bar(total_epoch=args.num_train_epochs)
+        epochs_trained = nmp.cur_epoch
+        logger.info(f'epochs_trained: {epochs_trained}')
 
-    def on_epoch_end(self, epoch, logs=None):
-        self.epoch += 1
-        # self.model.save_pretrained(self.output_dir+"/checkpoint_epoch{}".format(epoch))
+    def on_train_end(self, logs=None):
+        logger.info(f'log : {logs}')
+        nmp.finish_training()
+
+    def on_train_batch_begin(self, batch, logs=None):
+        logger.info(f'batch : {batch}, logs: {logs}')
+        if nmp.should_skip_step():
+            return
 
     def on_train_batch_end(self, batch, logs=None):
-        if batch % 10000 == 0:
-            self.model.save_pretrained(self.output_dir+"/checkpoint_epoch{}_iteration{}".format(self.epoch, batch))
+        logger.info(f'on_train_batch_end : batch : {batch} , log : {logs}')
 
+        learning_rate = self.model.optimizer.learning_rate(self.model.optimizer.iterations.numpy())
 
+        learning_rate = tf.keras.backend.get_value(learning_rate)
+        logger.info(f'learning_rate : {learning_rate}')
+
+        nmp.step({"loss": float(logs['loss']),
+                  "Learning rate": float(learning_rate)})
+        logger.info(f'save_pretrained_by_step : {args.save_steps}')
+        nmp.save_pretrained_by_step(args.save_steps)
+
+    def on_test_end(self, logs=None):
+        logger.info(f'log : {logs}')
+        nmp.evaluate(logs)
 
 
 # region Data generator
@@ -105,7 +128,7 @@ def mask_tokens(inputs, mlm_probability, tokenizer, special_tokens_mask):
 
 
 logdir = logdir = "logs/roberta_scalars/" + datetime.now().strftime("%Y%m%d-%H%M%S")
-tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=logdir,
+tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=logdir, 
                                                     histogram_freq=1,
                                                     profile_batch=0,
                                                     update_freq=10000)
@@ -113,19 +136,19 @@ tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=logdir,
 
 
 
-
-
+checkpoint = None
+model_name_or_path = None
+"""
 # data_args
-max_seq_length=512 # 1024? 512?
-preprocessing_num_workers = 128
-overwrite_cache = False
+args.max_seq_length=512 # 1024? 512?
+args.preprocessing_num_workers = 128
+args.overwrite_cache = False
 # validation_split_percentage = 0.1
 # checkpoint = "/home/protago/Xing/pretrainRoberta/roberta_saved_model_ep4over5/checkpoint_epoch1_iteration0"
-checkpoint = None
 # checkpoint = "bert_saved_model_original"
-config_name = "roberta-base"
-tokenizer_name = "roberta-base"
-model_name_or_path = None
+args.config_name = "roberta-base"
+args.tokenizer_name = "roberta-base"
+"""
 
 
 # region Load pretrained model and tokenizer
@@ -134,8 +157,8 @@ model_name_or_path = None
 # download model & vocab.
 if checkpoint is not None:
     config = AutoConfig.from_pretrained(checkpoint)
-elif config_name:
-    config = AutoConfig.from_pretrained(config_name)
+elif args.config_name:
+    config = AutoConfig.from_pretrained(args.config_name)
 elif model_name_or_path:
     config = AutoConfig.from_pretrained(model_name_or_path)
 else:
@@ -147,25 +170,26 @@ train_dataset = datasets.load_from_disk("./data_roberta")
 
 print(train_dataset)
 
+"""
+args.per_device_train_batch_size = 16
+args.num_train_epochs = 5
+args.learning_rate = 0.0001 # bs 8k ~ lr 6e-4 500K steps
+# args.learning_rate = 0.05e-4
+# args.learning_rate = 0.01e-4
+args.adam_beta1 = 0.9
+args.adam_beta2 = 0.98
+args.adam_epsilon = 1e-6
+args.weight_decay = 0.01
 
-per_device_train_batch_size = 16
-num_train_epochs = 5
-learning_rate = 0.0001 # bs 8k ~ lr 6e-4 500K steps
-# learning_rate = 0.05e-4
-# learning_rate = 0.01e-4
-adam_beta1 = 0.9
-adam_beta2 = 0.98
-adam_epsilon = 1e-6
-weight_decay = 0.01
+args.warmup_proportion = 0.1
+# args.warmup_proportion = 0
 
-warmup_proportion = 0.1
-# warmup_proportion = 0
+args.output_dir = "./roberta_saved_model_ep5"
+"""
 
-output_dir = "./roberta_saved_model_ep5"
+tokenizer = AutoTokenizer.from_pretrained(args.tokenizer_name)
 
-tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
-
-with tf.distribute.MirroredStrategy().scope():
+with tf.distribute.MultiWorkerMirroredStrategy().scope():
 
     # # region Prepare model
     if checkpoint is not None:
@@ -180,7 +204,7 @@ with tf.distribute.MirroredStrategy().scope():
     # endregion
 
     # region TF Dataset preparation
-    num_replicas = tf.distribute.MirroredStrategy().num_replicas_in_sync
+    num_replicas = tf.distribute.MultiWorkerMirroredStrategy().num_replicas_in_sync
     train_generator = partial(sample_generator, train_dataset, tokenizer)
     train_signature = {
         feature: tf.TensorSpec(shape=(None,), dtype=tf.int64)
@@ -194,30 +218,32 @@ with tf.distribute.MirroredStrategy().scope():
     tf_train_dataset = (
         tf.data.Dataset.from_generator(train_generator, output_signature=train_signature)
         .with_options(options)
-        .batch(batch_size=num_replicas * per_device_train_batch_size, drop_remainder=True)
-        .repeat(int(num_train_epochs))
+        .batch(batch_size=num_replicas * args.per_device_train_batch_size, drop_remainder=True)
+        .repeat(int(args.num_train_epochs))
     )
 
 
 
     # region Optimizer and loss
-    batches_per_epoch = len(train_dataset) // (num_replicas * per_device_train_batch_size)
+    batches_per_epoch = len(train_dataset) // (num_replicas * args.per_device_train_batch_size)
     # Bias and layernorm weights are automatically excluded from the decay
+
     optimizer, lr_schedule = create_optimizer(
-        init_lr=learning_rate,
-        num_train_steps=int(num_train_epochs * batches_per_epoch),
-        num_warmup_steps=int(warmup_proportion * num_train_epochs * batches_per_epoch),
-        adam_beta1=adam_beta1,
-        adam_beta2=adam_beta2,
-        adam_epsilon=adam_epsilon,
-        weight_decay_rate=weight_decay,
+        init_lr=args.learning_rate,
+        num_train_steps=int(args.num_train_epochs * batches_per_epoch),
+        num_warmup_steps=int(args.warmup_proportion * args.num_train_epochs * batches_per_epoch),
+        adam_beta1=args.adam_beta1,
+        adam_beta2=args.adam_beta2,
+        adam_epsilon=args.adam_epsilon,
+        weight_decay_rate=args.weight_decay,
     )
 
+
     # optimizer, lr_schedule = create_optimizer(
-    #     init_lr=learning_rate,
-    #     num_train_steps=int(num_train_epochs * batches_per_epoch),
-    #     num_warmup_steps=int(warmup_proportion * num_train_epochs * batches_per_epoch),
-    #     weight_decay_rate=weight_decay,
+    #     init_lr=args.learning_rate,
+    #     num_train_steps=int(args.num_train_epochs * batches_per_epoch),
+    #     num_warmup_steps=int(args.warmup_proportion * args.num_train_epochs * batches_per_epoch),
+    #     args.weight_decay_rate=args.weight_decay,
     # )
 
     def dummy_loss(y_true, y_pred):
@@ -227,20 +253,14 @@ with tf.distribute.MirroredStrategy().scope():
     # endregion
 
 
-    # region Training and validation
-    # logger.info("***** Running training *****")
-    # logger.info(f"  Num examples = {len(train_dataset)}")
-    # logger.info(f"  Num Epochs = {num_train_epochs}")
-    # logger.info(f"  Instantaneous batch size per device = {per_device_train_batch_size}")
-    # logger.info(f"  Total train batch size = {per_device_train_batch_size * num_replicas}")
-
     history = model.fit(
         tf_train_dataset,
         # validation_data=tf_eval_dataset,
-        epochs=int(num_train_epochs),
-        steps_per_epoch=len(train_dataset) // (per_device_train_batch_size * num_replicas),
-        callbacks=[SavePretrainedCallback(output_dir=output_dir),tensorboard_callback],
+        epochs=int(args.num_train_epochs),
+        steps_per_epoch=len(train_dataset) // (args.per_device_train_batch_size * num_replicas),
+        callbacks=[SavePretrainedCallback(output_dir=args.output_dir),tensorboard_callback],
     )
+
     # try:
     #     train_perplexity = math.exp(history.history["loss"][-1])
     # except OverflowError:
@@ -254,6 +274,3 @@ with tf.distribute.MirroredStrategy().scope():
     # logger.warning(f"  Final validation loss: {history.history['val_loss'][-1]:.3f}")
     # logger.warning(f"  Final validation perplexity: {validation_perplexity:.3f}")
     # endregion
-
-    if output_dir is not None:
-        model.save_pretrained(output_dir)

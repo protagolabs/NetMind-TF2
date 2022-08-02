@@ -30,7 +30,8 @@ tokenizer_name = "roberta-base"
 # #### dataloader ####
 bookcorpus = datasets.load_dataset('bookcorpus')
 print(bookcorpus)
-wikipedia = datasets.load_dataset('wikipedia','20200501.en')
+#wikipedia = datasets.load_dataset('wikipedia','20200501.en')
+wikipedia = datasets.load_dataset('wikipedia','20220301.en')
 print(wikipedia)
 ccnews = datasets.load_dataset('cc_news')
 print(ccnews)
@@ -42,6 +43,7 @@ ccnews = ccnews.remove_columns(['title', 'domain', 'date', 'description', 'url',
 
 raw_datasets = datasets.concatenate_datasets([bookcorpus['train'],wikipedia['train'],ccnews['train'],openwebtxt['train']])
 print(raw_datasets)
+raw_datasets = raw_datasets.select(list(range(10000)))
 
 
 
