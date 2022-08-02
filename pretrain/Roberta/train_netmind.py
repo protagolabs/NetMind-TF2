@@ -1,17 +1,13 @@
-from os import makedirs
-from numpy.lib.histograms import histogram
 import sys
-import math
-import time
+import os
+import json
 import datasets
 import numpy as np
 import logging
-import random
-import transformers
+import config as c
 import tensorflow as tf
 from datetime import datetime
 from functools import partial
-from datasets import load_dataset
 from transformers import AutoTokenizer, AutoConfig
 from transformers import create_optimizer, TFAutoModelForMaskedLM, AdamWeightDecay
 from NetmindMixins.Netmind import nmp, NetmindDistributedModel, NetmindOptimizer, NetmindDistributedModel
@@ -127,150 +123,146 @@ def mask_tokens(inputs, mlm_probability, tokenizer, special_tokens_mask):
 #### tokenizer ####
 
 
-logdir = logdir = "logs/roberta_scalars/" + datetime.now().strftime("%Y%m%d-%H%M%S")
-tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=logdir, 
-                                                    histogram_freq=1,
-                                                    profile_batch=0,
-                                                    update_freq=10000)
+if __name__ == '__main__':
+
+    if not os.getenv('TF_CONFIG'):
+        c.tf_config['task']['index'] = int(os.getenv('INDEX'))
+        os.environ['TF_CONFIG'] = json.dumps(c.tf_config)
+
+    n_workers = len(json.loads(os.environ['TF_CONFIG']).get('cluster', {}).get('worker'))
+    logger.info(f'c.tf_config : {c.tf_config}')
+
+    logdir = logdir = "logs/roberta_scalars/" + datetime.now().strftime("%Y%m%d-%H%M%S")
+    tensorboard_callback = tf.keras.callbacks.TensorBoard(log_dir=logdir,
+                                                        histogram_freq=1,
+                                                        profile_batch=0,
+                                                        update_freq=10000)
 
 
 
 
-checkpoint = None
-model_name_or_path = None
-"""
-# data_args
-args.max_seq_length=512 # 1024? 512?
-args.preprocessing_num_workers = 128
-args.overwrite_cache = False
-# validation_split_percentage = 0.1
-# checkpoint = "/home/protago/Xing/pretrainRoberta/roberta_saved_model_ep4over5/checkpoint_epoch1_iteration0"
-# checkpoint = "bert_saved_model_original"
-args.config_name = "roberta-base"
-args.tokenizer_name = "roberta-base"
-"""
+    checkpoint = None
+    model_name_or_path = None
+    """
+    # data_args
+    args.max_seq_length=512 # 1024? 512?
+    args.preprocessing_num_workers = 128
+    args.overwrite_cache = False
+    # validation_split_percentage = 0.1
+    # checkpoint = "/home/protago/Xing/pretrainRoberta/roberta_saved_model_ep4over5/checkpoint_epoch1_iteration0"
+    # checkpoint = "bert_saved_model_original"
+    args.config_name = "roberta-base"
+    args.tokenizer_name = "roberta-base"
+    """
 
 
-# region Load pretrained model and tokenizer
-#
-# In distributed training, the .from_pretrained methods guarantee that only one local process can concurrently
-# download model & vocab.
-if checkpoint is not None:
-    config = AutoConfig.from_pretrained(checkpoint)
-elif args.config_name:
-    config = AutoConfig.from_pretrained(args.config_name)
-elif model_name_or_path:
-    config = AutoConfig.from_pretrained(model_name_or_path)
-else:
-    print.warning("You are using unknown config.")
-
-
-
-train_dataset = datasets.load_from_disk("./data_roberta")
-
-print(train_dataset)
-
-"""
-args.per_device_train_batch_size = 16
-args.num_train_epochs = 5
-args.learning_rate = 0.0001 # bs 8k ~ lr 6e-4 500K steps
-# args.learning_rate = 0.05e-4
-# args.learning_rate = 0.01e-4
-args.adam_beta1 = 0.9
-args.adam_beta2 = 0.98
-args.adam_epsilon = 1e-6
-args.weight_decay = 0.01
-
-args.warmup_proportion = 0.1
-# args.warmup_proportion = 0
-
-args.output_dir = "./roberta_saved_model_ep5"
-"""
-
-tokenizer = AutoTokenizer.from_pretrained(args.tokenizer_name)
-
-with tf.distribute.MultiWorkerMirroredStrategy().scope():
-
-    # # region Prepare model
+    # region Load pretrained model and tokenizer
+    #
+    # In distributed training, the .from_pretrained methods guarantee that only one local process can concurrently
+    # download model & vocab.
     if checkpoint is not None:
-        model = TFAutoModelForMaskedLM.from_pretrained(checkpoint, config=config)
-    # elif model_name_or_path:
-    #     model = TFAutoModelForMaskedLM.from_pretrained(model_name_or_path, config=config)
+        config = AutoConfig.from_pretrained(checkpoint)
+    elif args.config_name:
+        config = AutoConfig.from_pretrained(args.config_name)
+    elif model_name_or_path:
+        config = AutoConfig.from_pretrained(model_name_or_path)
     else:
-        print("Training new model from scratch")
-        model = TFAutoModelForMaskedLM.from_config(config)
-
-    model.resize_token_embeddings(len(tokenizer))
-    # endregion
-
-    # region TF Dataset preparation
-    num_replicas = tf.distribute.MultiWorkerMirroredStrategy().num_replicas_in_sync
-    train_generator = partial(sample_generator, train_dataset, tokenizer)
-    train_signature = {
-        feature: tf.TensorSpec(shape=(None,), dtype=tf.int64)
-        for feature in train_dataset.features
-        if feature != "special_tokens_mask"
-    }
-    train_signature["labels"] = train_signature["input_ids"]
-    train_signature = (train_signature, train_signature["labels"])
-    options = tf.data.Options()
-    options.experimental_distribute.auto_shard_policy = tf.data.experimental.AutoShardPolicy.OFF
-    tf_train_dataset = (
-        tf.data.Dataset.from_generator(train_generator, output_signature=train_signature)
-        .with_options(options)
-        .batch(batch_size=num_replicas * args.per_device_train_batch_size, drop_remainder=True)
-        .repeat(int(args.num_train_epochs))
-    )
+        print.warning("You are using unknown config.")
 
 
 
-    # region Optimizer and loss
-    batches_per_epoch = len(train_dataset) // (num_replicas * args.per_device_train_batch_size)
-    # Bias and layernorm weights are automatically excluded from the decay
+    train_dataset = datasets.load_from_disk("./data_roberta")
 
-    optimizer, lr_schedule = create_optimizer(
-        init_lr=args.learning_rate,
-        num_train_steps=int(args.num_train_epochs * batches_per_epoch),
-        num_warmup_steps=int(args.warmup_proportion * args.num_train_epochs * batches_per_epoch),
-        adam_beta1=args.adam_beta1,
-        adam_beta2=args.adam_beta2,
-        adam_epsilon=args.adam_epsilon,
-        weight_decay_rate=args.weight_decay,
-    )
+    print(train_dataset)
+
+    """
+    args.per_device_train_batch_size = 16
+    args.num_train_epochs = 5
+    args.learning_rate = 0.0001 # bs 8k ~ lr 6e-4 500K steps
+    # args.learning_rate = 0.05e-4
+    # args.learning_rate = 0.01e-4
+    args.adam_beta1 = 0.9
+    args.adam_beta2 = 0.98
+    args.adam_epsilon = 1e-6
+    args.weight_decay = 0.01
+    
+    args.warmup_proportion = 0.1
+    # args.warmup_proportion = 0
+    
+    args.output_dir = "./roberta_saved_model_ep5"
+    """
+
+    tokenizer = AutoTokenizer.from_pretrained(args.tokenizer_name)
+
+    with tf.distribute.MultiWorkerMirroredStrategy().scope():
+
+        # # region Prepare model
+        if checkpoint is not None:
+            model = TFAutoModelForMaskedLM.from_pretrained(checkpoint, config=config)
+        # elif model_name_or_path:
+        #     model = TFAutoModelForMaskedLM.from_pretrained(model_name_or_path, config=config)
+        else:
+            print("Training new model from scratch")
+            model = TFAutoModelForMaskedLM.from_config(config)
+
+        model.resize_token_embeddings(len(tokenizer))
+        # endregion
+
+        # region TF Dataset preparation
+        num_replicas = tf.distribute.MultiWorkerMirroredStrategy().num_replicas_in_sync
+        train_generator = partial(sample_generator, train_dataset, tokenizer)
+        train_signature = {
+            feature: tf.TensorSpec(shape=(None,), dtype=tf.int64)
+            for feature in train_dataset.features
+            if feature != "special_tokens_mask"
+        }
+        train_signature["labels"] = train_signature["input_ids"]
+        train_signature = (train_signature, train_signature["labels"])
+        options = tf.data.Options()
+        options.experimental_distribute.auto_shard_policy = tf.data.experimental.AutoShardPolicy.OFF
+        tf_train_dataset = (
+            tf.data.Dataset.from_generator(train_generator, output_signature=train_signature)
+            .with_options(options)
+            .batch(batch_size=num_replicas * args.per_device_train_batch_size, drop_remainder=True)
+            .repeat(int(args.num_train_epochs))
+        )
 
 
-    # optimizer, lr_schedule = create_optimizer(
-    #     init_lr=args.learning_rate,
-    #     num_train_steps=int(args.num_train_epochs * batches_per_epoch),
-    #     num_warmup_steps=int(args.warmup_proportion * args.num_train_epochs * batches_per_epoch),
-    #     args.weight_decay_rate=args.weight_decay,
-    # )
 
-    def dummy_loss(y_true, y_pred):
-        return tf.reduce_mean(y_pred)
+        # region Optimizer and loss
+        batches_per_epoch = len(train_dataset) // (num_replicas * args.per_device_train_batch_size)
+        # Bias and layernorm weights are automatically excluded from the decay
 
-    model.compile(optimizer=optimizer, loss={"loss": dummy_loss})
-    # endregion
+        optimizer, lr_schedule = create_optimizer(
+            init_lr=args.learning_rate,
+            num_train_steps=int(args.num_train_epochs * batches_per_epoch),
+            num_warmup_steps=int(args.warmup_proportion * args.num_train_epochs * batches_per_epoch),
+            adam_beta1=args.adam_beta1,
+            adam_beta2=args.adam_beta2,
+            adam_epsilon=args.adam_epsilon,
+            weight_decay_rate=args.weight_decay,
+        )
 
 
-    history = model.fit(
-        tf_train_dataset,
-        # validation_data=tf_eval_dataset,
-        epochs=int(args.num_train_epochs),
-        steps_per_epoch=len(train_dataset) // (args.per_device_train_batch_size * num_replicas),
-        callbacks=[SavePretrainedCallback(output_dir=args.output_dir),tensorboard_callback],
-    )
+        # optimizer, lr_schedule = create_optimizer(
+        #     init_lr=args.learning_rate,
+        #     num_train_steps=int(args.num_train_epochs * batches_per_epoch),
+        #     num_warmup_steps=int(args.warmup_proportion * args.num_train_epochs * batches_per_epoch),
+        #     args.weight_decay_rate=args.weight_decay,
+        # )
 
-    # try:
-    #     train_perplexity = math.exp(history.history["loss"][-1])
-    # except OverflowError:
-    #     train_perplexity = math.inf
-    # try:
-    #     validation_perplexity = math.exp(history.history["val_loss"][-1])
-    # except OverflowError:
-    #     validation_perplexity = math.inf
-    # logger.warning(f"  Final train loss: {history.history['loss'][-1]:.3f}")
-    # logger.warning(f"  Final train perplexity: {train_perplexity:.3f}")
-    # logger.warning(f"  Final validation loss: {history.history['val_loss'][-1]:.3f}")
-    # logger.warning(f"  Final validation perplexity: {validation_perplexity:.3f}")
-    # endregion
+        def dummy_loss(y_true, y_pred):
+            return tf.reduce_mean(y_pred)
+
+        model.compile(optimizer=optimizer, loss={"loss": dummy_loss})
+        # endregion
+
+
+        history = model.fit(
+            tf_train_dataset,
+            # validation_data=tf_eval_dataset,
+            epochs=int(args.num_train_epochs),
+            steps_per_epoch=len(train_dataset) // (args.per_device_train_batch_size * num_replicas),
+            callbacks=[SavePretrainedCallback(output_dir=args.output_dir),tensorboard_callback],
+        )
+

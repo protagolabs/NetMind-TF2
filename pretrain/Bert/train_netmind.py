@@ -352,9 +352,7 @@ if __name__ == '__main__':
             steps_per_epoch=len(train_dataset) // (args.per_device_train_batch_size * n_workers),
             callbacks=[SavePretrainedCallback(output_dir=args.output_dir), tensorboard_callback],
         )
-    if os.getenv('INDEX') == '1':
-        print('sleep 15')
-        import time
+
     print('end of bert')
 
         
