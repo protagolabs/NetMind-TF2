@@ -43,21 +43,22 @@ def load_image(image_path, label, augment=False, crop_10=False):
 
     return image, label_one_hot
 
-def train_iterator(list_path=c.train_list_path):
-    images, labels = load_list(list_path, c.train_data_path)
+def train_iterator(list_path, train_data_path):
+    images, labels = load_list(list_path, train_data_path)
     dataset = tf.data.Dataset.from_tensor_slices((images, labels))
     dataset = dataset.shuffle(len(images))
     dataset = dataset.repeat()
     dataset = dataset.map(lambda x, y: tf.py_function(load_image, inp=[x, y, True, False], Tout=[tf.float32, tf.float32]),
-                          num_parallel_calls=tf.data.experimental.AUTOTUNE)
+                          num_parallel_calls=tf.data.experimental.AUTOTUNE, deterministic=False)
     return dataset
 
-def test_iterator(list_path=c.test_list_path):
-    images, labels = load_list(list_path, c.test_data_path)
+def test_iterator(list_path, test_data_path):
+    images, labels = load_list(list_path, test_data_path)
     dataset = tf.data.Dataset.from_tensor_slices((images, labels))
     dataset = dataset.repeat()
     dataset = dataset.map(lambda x, y: tf.py_function(load_image, inp=[x, y, False, False], Tout=[tf.float32, tf.float32]),
-                          num_parallel_calls=tf.data.experimental.AUTOTUNE)
+                          num_parallel_calls=tf.data.experimental.AUTOTUNE, deterministic=False)
+
     return dataset
 
 def test_10_crop_iterator(list_path=c.test_list_path):
