@@ -260,8 +260,8 @@ if __name__ == '__main__':
     # )
 
     #### you can save/load the preprocessed data here ###
-
-    tokenized_datasets = datasets.load_from_disk("./data_bert")
+    logger.info(f'loading data from : {args.data}')
+    tokenized_datasets = datasets.load_from_disk(args.data)
     # tokenized_datasets.save_to_disk("./data_bert")
 
     train_dataset = tokenized_datasets

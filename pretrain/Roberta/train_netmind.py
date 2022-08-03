@@ -169,9 +169,8 @@ if __name__ == '__main__':
     else:
         print.warning("You are using unknown config.")
 
-
-
-    train_dataset = datasets.load_from_disk("./data_roberta")
+    logger.info(f'loading data from : {args.data}')
+    train_dataset = datasets.load_from_disk(args.data)
 
     print(train_dataset)
 
