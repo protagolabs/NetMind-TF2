@@ -4,8 +4,6 @@ category_num = 1000
 input_shape = (224, 224, 3)
 weight_decay = 1e-4
 label_smoothing = 0.1
-
-
 #test_iterations = int(test_num / batch_size) + 1
 
 # initial_learning_rate = 0.1

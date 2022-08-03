@@ -41,3 +41,4 @@ CUDA_VISIBLE_DEVICES="0" python $entry_point  \
                           --tokenizer_name=bert-base-uncased \
                           --model_name_or_path="" \
                           --per_device_train_batch_size=16
+

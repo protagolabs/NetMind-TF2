@@ -157,14 +157,15 @@ if __name__ == '__main__':
             # logger.info('pretrain weight l2 loss:{:.4f}'.format(l2_loss(model)))
         """
 
-        iterations_per_epoch = int(args.train_num / args.per_device_train_batch_size)
+        #iterations_per_epoch = int(args.train_num / args.per_device_train_batch_size)
+        iterations_per_epoch = int(args.train_num / global_batch_size)
         warm_iterations = iterations_per_epoch
         # here we automatically change the iterations per epoch based on number of gpus
         learning_rate_schedules = CosineDecayWithWarmUP(initial_learning_rate=args.learning_rate * n_workers,
                                                         decay_steps=args.num_train_epochs * int(iterations_per_epoch / n_workers)  - int(warm_iterations / n_workers),
                                                         alpha=args.minimum_learning_rate * n_workers,
-                                                        warm_up_step=int(args.warmup_steps))
-                                                        #warm_up_step=int(warm_iterations / n_workers))
+                                                        #warm_up_step=int(args.warmup_steps))
+                                                        warm_up_step=int(warm_iterations / n_workers))
 
         optimizer = tf.keras.optimizers.SGD(learning_rate=learning_rate_schedules, momentum=0.9)
         logger.info('scope end')
@@ -260,7 +261,7 @@ if __name__ == '__main__':
                 #    os.system('cp {} {}_epoch_{}.h5'.format(c.save_weight_file, c.save_weight_file.split('.')[0], epoch_num))
             nmp.finish_training()
             end = time.time()
-            logger.info(f'training finished... cnt : {cnt}, next_cnt : {next_cnt}, total cost : {end-begin}, epoch_time_cost_list : {epoch_time_cost_list}')
+            logger.info(f'training finished..., next_cnt : {next_cnt}, total cost : {end-begin}, epoch_time_cost_list : {epoch_time_cost_list}')
 
     """In the example above, we iterated over the `dist_dataset` to provide input to your training. We also provide the  `tf.distribute.Strategy.make_experimental_numpy_dataset` to support numpy inputs. You can use this API to create a dataset before calling `tf.distribute.Strategy.experimental_distribute_dataset`.
         Another way of iterating over your data is to explicitly use iterators. You may want to do this when you want to run for a given number of steps as opposed to iterating over the entire dataset.
