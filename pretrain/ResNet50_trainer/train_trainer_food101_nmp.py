@@ -28,9 +28,8 @@ class SavePretrainedCallback(tf.keras.callbacks.Callback):
     # Hugging Face models have a save_pretrained() method that saves both the weights and the necessary
     # metadata to allow them to be loaded as a pretrained model in future. This is a simple Keras callback
     # that saves the model with this method after each epoch.
-    def __init__(self, output_dir, **kwargs):
+    def __init__(self, **kwargs):
         super().__init__()
-        self.output_dir = output_dir
         self.epoch = 0
 
     def on_train_begin(self, logs=None):
@@ -46,7 +45,7 @@ class SavePretrainedCallback(tf.keras.callbacks.Callback):
     def on_train_end(self, logs=None):
         logger.info(f'log : {logs}')
         nmp.finish_training()
-
+    
     def on_train_batch_begin(self, batch, logs=None):
         logger.info(f'batch : {batch}, logs: {logs}')
         if nmp.should_skip_step():
@@ -54,16 +53,19 @@ class SavePretrainedCallback(tf.keras.callbacks.Callback):
 
     def on_train_batch_end(self, batch, logs=None):
         logger.info(f'on_train_batch_end : batch : {batch} , log : {logs}')
-
+        print(f'type: {self.model.optimizer.iterations}')
+        """
         learning_rate = self.model.optimizer.learning_rate(self.model.optimizer.iterations.numpy())
 
         learning_rate = tf.keras.backend.get_value(learning_rate)
+        """
+        learning_rate = self.model.optimizer.learning_rate.numpy()
         logger.info(f'learning_rate : {learning_rate}')
 
         nmp.step({"loss": float(logs['loss']),
                   "Learning rate": float(learning_rate)})
         logger.info(f'save_pretrained_by_step : {args.save_steps}')
-        nmp.save_pretrained_by_step(args.save_steps)
+        #nmp.save_pretrained_by_step(args.save_steps)
 
     def on_test_end(self, logs=None):
         logger.info(f'log : {logs}')
@@ -72,6 +74,15 @@ class SavePretrainedCallback(tf.keras.callbacks.Callback):
 
 if __name__ == '__main__':
 
+    """
+    config = tf.compat.v1.ConfigProto()
+    config.gpu_options.per_process_gpu_memory_fraction = 0.4
+    #config.gpu_options.allow_growth = True
+    sess = tf.compat.v1.Session(config=config)
+    gpu_list = tf.config.experimental.list_physical_devices('GPU')
+    for gpu in gpu_list:
+        tf.config.experimental.set_memory_growth(gpu, True)
+    """
 
     if not os.getenv('TF_CONFIG'):
         c.tf_config['task']['index'] = int(os.getenv('INDEX'))
@@ -86,7 +97,7 @@ if __name__ == '__main__':
     global_batch_size = args.per_device_train_batch_size * n_workers
 
     train_ds = tf.keras.preprocessing.image_dataset_from_directory(
-        "food-101/images",
+        args.data,
         validation_split=0.2,
         subset="training",
         seed=1337,
@@ -94,7 +105,7 @@ if __name__ == '__main__':
         batch_size=global_batch_size,
     )
     val_ds = tf.keras.preprocessing.image_dataset_from_directory(
-        "food-101/images",
+        args.data,
         validation_split=0.2,
         subset="validation",
         seed=1337,
@@ -181,6 +192,7 @@ if __name__ == '__main__':
         steps_per_epoch= train_num  // global_batch_size , 
         validation_steps= test_num // global_batch_size ,
         epochs=args.num_train_epochs,
-        callbacks=[SavePretrainedCallback, tensorboard_callback]
+        #callbacks=[SavePretrainedCallback(), tensorboard_callback]
+        callbacks=[tensorboard_callback]
     )
 
