@@ -1,6 +1,6 @@
 import os
 import tensorflow as tf
-import config as c
+import config_no_nmp as c
 
 
 
