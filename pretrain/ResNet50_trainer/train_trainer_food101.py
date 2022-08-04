@@ -27,7 +27,7 @@ if __name__ == '__main__':
     global_batch_size = c.batch_size *  num_gpus
 
     train_ds = tf.keras.preprocessing.image_dataset_from_directory(
-        "/data/food-101/images",
+        c.train_data_path,
         validation_split=0.2,
         subset="training",
         seed=1337,
@@ -35,7 +35,7 @@ if __name__ == '__main__':
         batch_size=global_batch_size,
     )
     val_ds = tf.keras.preprocessing.image_dataset_from_directory(
-        "/data/food-101/images",
+        c.test_data_path,
         validation_split=0.2,
         subset="validation",
         seed=1337,
@@ -73,7 +73,7 @@ if __name__ == '__main__':
 
 
 
-        optimizer = tf.keras.optimizers.Adam(c.initial_learning_rate *  num_gpus)
+        optimizer = tf.keras.optimizers.SGD(c.initial_learning_rate *  num_gpus)
 
         model.compile(
             optimizer=optimizer,
