@@ -65,11 +65,12 @@ class SavePretrainedCallback(tf.keras.callbacks.Callback):
         nmp.step({"loss": float(logs['loss']),
                   "Learning rate": float(learning_rate)})
         logger.info(f'save_pretrained_by_step : {args.save_steps}')
-        #nmp.save_pretrained_by_step(args.save_steps)
+        nmp.save_pretrained_by_step(args.save_steps)
 
     def on_test_end(self, logs=None):
         logger.info(f'log : {logs}')
         nmp.evaluate(logs)
+        
 
 
 if __name__ == '__main__':
@@ -192,7 +193,6 @@ if __name__ == '__main__':
         steps_per_epoch= train_num  // global_batch_size , 
         validation_steps= test_num // global_batch_size ,
         epochs=args.num_train_epochs,
-        #callbacks=[SavePretrainedCallback(), tensorboard_callback]
-        callbacks=[tensorboard_callback]
+        callbacks=[SavePretrainedCallback(), tensorboard_callback]
     )
 
