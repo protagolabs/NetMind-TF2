@@ -19,12 +19,20 @@ rm food-101.tar.gz
 
 ## 
 
-## Distributed Training and Evaluating 
+## Local
+make sure you set the correct data path in train_trainer_food101.py
 
 ```bash
 bash local_run_trainer.sh
 ```
 
+##
+
+## Netmind
+```bash
+bash multi_run_0.sh
+bash multi_run_1.sh
+```
 ##
 
 
