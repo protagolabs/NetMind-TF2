@@ -10,9 +10,9 @@ export MONITOR=wandb
 echo $PYTHONPATH
 export  ROLE=master
 export INDEX=0
+export TIME_ESTIMATE_PROCESS=1
+export TIME_ESTIMATE_BATCH=20
 export DATA_LOCATION=/data/resnet50/extract
-#export TIME_ESTIMATE_PROCESS=1
-#export TIME_ESTIMATE_BATCH=20
 CUDA_VISIBLE_DEVICES="0" python test_multi_worker.py  --category_num=1000 \
                           --per_device_train_batch_size=100 --weight_decay=0.0001 --label_smoothing=0.1 --train_num=1300 \
                           --test_num=100 --learning_rate=0.05 --minimum_learning_rate=0.0001 \

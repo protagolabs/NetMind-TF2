@@ -12,8 +12,8 @@ export PYTHONPATH=/home/protago/ly/NetMind-Images/NetmindModelEnv/NetmindMixins:
 echo $PYTHONPATH
 export  ROLE=master
 export INDEX=0
-export TIME_ESTIMATE_PROCESS=1
-export TIME_ESTIMATE_BATCH=20
+#export TIME_ESTIMATE_PROCESS=1
+#export TIME_ESTIMATE_BATCH=20
 export DATA_LOCATION=/data/food-101/sub_images
 entry_point=train_trainer_food101_nmp.py
 train_num=1300

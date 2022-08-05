@@ -43,7 +43,7 @@ class SavePretrainedCallback(tf.keras.callbacks.Callback):
         logger.info(f'epochs_trained: {epochs_trained}')
 
     def on_train_end(self, logs=None):
-        logger.info(f'log : {logs}')
+        logger.info(f'finish trianing log : {logs}')
         nmp.finish_training()
     
     def on_train_batch_begin(self, batch, logs=None):
