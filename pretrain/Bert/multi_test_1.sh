@@ -12,6 +12,7 @@ export INDEX=1
 #export TIME_ESTIMATE_PROCESS=1
 #export TIME_ESTIMATE_BATCH=20
 entry_point=train_netmind.py
+export DATA_LOCATION=./data_bert
 CUDA_VISIBLE_DEVICES="1" python $entry_point  \
                           --label_smoothing=0.1 \
                           --minimum_learning_rate=0.0001 \
