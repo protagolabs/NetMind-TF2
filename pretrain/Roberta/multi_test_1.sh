@@ -12,6 +12,7 @@ export INDEX=1
 #export TIME_ESTIMATE_PROCESS=1
 #export TIME_ESTIMATE_BATCH=20
 entry_point=train_netmind.py
+export DATA_LOCATION=./data_roberta
 CUDA_VISIBLE_DEVICES="1" python $entry_point  \
                           --label_smoothing=0.1 \
                           --save_steps=2 \
