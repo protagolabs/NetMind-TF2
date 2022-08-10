@@ -5,7 +5,7 @@ export DOMAIN=test
 export PLATFORM=tensorflow
 export JOBID=06cefa0e-2d5c-4346-b02e-9abb507023f5
 export PLATFORM=tensorflow
-export PYTHONPATH=/home/protago/ly/NetMind-Images/NetmindModelEnv/NetmindMixins:${PYTHONPATH}
+export PYTHONPATH=/home/protago/ly/NetMind-Mixin:${PYTHONPATH}
 export MONITOR=wandb
 echo $PYTHONPATH
 export INDEX=1
