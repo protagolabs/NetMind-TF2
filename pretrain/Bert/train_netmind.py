@@ -13,7 +13,7 @@ from functools import partial
 from datetime import datetime
 from transformers import AutoTokenizer, AutoConfig
 import transformers
-from NetmindMixins.Netmind import nmp, NetmindDistributedModel, NetmindOptimizer, NetmindDistributedModel
+from NetmindMixins.Netmind import nmp, NetmindDistributedModel, NetmindOptimizer, NetmindDistributedModel, TensorflowTrainerCallback
 
 logger = logging.getLogger()
 formatter = logging.Formatter('[%(asctime)s] [%(levelname)s] %(filename)s:%(lineno)d %(message)s', '%Y-%m-%d %H:%M:%S')
@@ -28,52 +28,14 @@ from arguments import setup_args
 args = setup_args()
 
 
-class SavePretrainedCallback(tf.keras.callbacks.Callback):
+class SavePretrainedCallback(TensorflowTrainerCallback):
     # Hugging Face models have a save_pretrained() method that saves both the weights and the necessary
     # metadata to allow them to be loaded as a pretrained model in future. This is a simple Keras callback
     # that saves the model with this method after each epoch.
-    def __init__(self, output_dir, **kwargs):
-        super().__init__()
-        self.output_dir = output_dir
-        self.epoch = 0
+    def __init__(self, output_dir, args):
+        super().__init__(output_dir, args)
 
-    def on_train_begin(self, logs=None):
-        logger.info(f'on_train_begin : log : {logs}')
-        # here we init train&eval bar
-        nmp.init(load_checkpoint=False)
-        NetmindDistributedModel(self.model)
-        nmp.init_train_bar(total_epoch=args.num_train_epochs, step_per_epoch=batches_per_epoch)
-        nmp.init_eval_bar(total_epoch=args.num_train_epochs)
-        epochs_trained = nmp.cur_epoch
-        logger.info(f'epochs_trained: {epochs_trained}')
 
-    def on_train_end(self, logs=None):
-        logger.info(f'log : {logs}')
-        nmp.finish_training()
-
-    def on_train_batch_begin(self, batch, logs=None):
-        logger.info(f'batch : {batch}, logs: {logs}')
-        if nmp.should_skip_step():
-            return
-
-    def on_train_batch_end(self, batch, logs=None):
-        logger.info(f'on_train_batch_end : batch : {batch} , log : {logs}')
-        
-        learning_rate = self.model.optimizer.learning_rate(self.model.optimizer.iterations.numpy())
-         
-        learning_rate  = tf.keras.backend.get_value(learning_rate)
-        logger.info(f'learning_rate : {learning_rate}')
-        
-        nmp.step({"loss": float(logs['loss']),
-                  "Learning rate": float(learning_rate)})
-        logger.info(f'save_pretrained_by_step : {args.save_steps}')
-        nmp.save_pretrained_by_step(args.save_steps)
-
-    def on_test_end(self, logs=None):
-        logger.info(f'log : {logs}')
-        nmp.evaluate(logs)
-
-    # region Data generator
 
 
 def sample_generator(dataset, tokenizer, mlm_probability=0.15, pad_to_multiple_of=None):
