@@ -10,7 +10,7 @@ import  logging
 from utils.data_utils_mm import train_iterator, test_iterator, cnt
 from utils.eval_utils import cross_entropy_batch, correct_num_batch, l2_loss
 from model.ResNet import ResNet
-from NetmindMixins.Netmind import nmp, NetmindDistributedModel, NetmindOptimizer, NetmindDistributedModel
+from NetmindMixins.Netmind import nmp, NetmindDistributedModel, NetmindOptimizer, NetmindDistributedModel, TensorflowTrainerCallback
 import sys
 from arguments import setup_args
 logger = logging.getLogger()
@@ -24,66 +24,16 @@ logger.setLevel(logging.INFO)
 args = setup_args()
 
 
-class SavePretrainedCallback(tf.keras.callbacks.Callback):
+class SavePretrainedCallback(TensorflowTrainerCallback):
     # Hugging Face models have a save_pretrained() method that saves both the weights and the necessary
     # metadata to allow them to be loaded as a pretrained model in future. This is a simple Keras callback
     # that saves the model with this method after each epoch.
-    def __init__(self, **kwargs):
-        super().__init__()
-        self.epoch = 0
-
-    def on_train_begin(self, logs=None):
-        logger.info(f'on_train_begin : log : {logs}')
-        # here we init train&eval bar
-        nmp.init(load_checkpoint=False)
-        NetmindDistributedModel(self.model)
-        nmp.init_train_bar(total_epoch=args.num_train_epochs, step_per_epoch=train_num  // global_batch_size)
-        nmp.init_eval_bar(total_epoch=args.num_train_epochs)
-        epochs_trained = nmp.cur_epoch
-        logger.info(f'epochs_trained: {epochs_trained}')
-
-    def on_train_end(self, logs=None):
-        logger.info(f'finish trianing log : {logs}')
-        nmp.finish_training()
-    
-    def on_train_batch_begin(self, batch, logs=None):
-        logger.info(f'batch : {batch}, logs: {logs}')
-        if nmp.should_skip_step():
-            return
-
-    def on_train_batch_end(self, batch, logs=None):
-        logger.info(f'on_train_batch_end : batch : {batch} , log : {logs}')
-        print(f'type: {self.model.optimizer.iterations}')
-        """
-        learning_rate = self.model.optimizer.learning_rate(self.model.optimizer.iterations.numpy())
-
-        learning_rate = tf.keras.backend.get_value(learning_rate)
-        """
-        learning_rate = self.model.optimizer.learning_rate.numpy()
-        logger.info(f'learning_rate : {learning_rate}')
-
-        nmp.step({"loss": float(logs['loss']),
-                  "Learning rate": float(learning_rate)})
-        logger.info(f'save_pretrained_by_step : {args.save_steps}')
-        nmp.save_pretrained_by_step(args.save_steps)
-
-    def on_test_end(self, logs=None):
-        logger.info(f'log : {logs}')
-        nmp.evaluate(logs)
+    def __init__(self, batches_per_epoch, args=args):
+        super().__init__(batches_per_epoch, args)
         
 
 
 if __name__ == '__main__':
-
-    """
-    config = tf.compat.v1.ConfigProto()
-    config.gpu_options.per_process_gpu_memory_fraction = 0.4
-    #config.gpu_options.allow_growth = True
-    sess = tf.compat.v1.Session(config=config)
-    gpu_list = tf.config.experimental.list_physical_devices('GPU')
-    for gpu in gpu_list:
-        tf.config.experimental.set_memory_growth(gpu, True)
-    """
 
     if not os.getenv('TF_CONFIG'):
         c.tf_config['task']['index'] = int(os.getenv('INDEX'))
@@ -187,12 +137,13 @@ if __name__ == '__main__':
         save_freq="epoch",
     )
 
+    train_batches_per_epoch = train_num // global_batch_size
     history = model.fit(
         train_data_iterator,
         validation_data=test_data_iterator,
-        steps_per_epoch= train_num  // global_batch_size , 
+        steps_per_epoch= train_batches_per_epoch,
         validation_steps= test_num // global_batch_size ,
         epochs=args.num_train_epochs,
-        callbacks=[SavePretrainedCallback(), tensorboard_callback]
+        callbacks=[SavePretrainedCallback(batches_per_epoch=train_batches_per_epoch), tensorboard_callback]
     )
 
