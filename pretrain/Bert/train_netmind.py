@@ -32,8 +32,8 @@ class SavePretrainedCallback(TensorflowTrainerCallback):
     # Hugging Face models have a save_pretrained() method that saves both the weights and the necessary
     # metadata to allow them to be loaded as a pretrained model in future. This is a simple Keras callback
     # that saves the model with this method after each epoch.
-    def __init__(self, output_dir, args):
-        super().__init__(output_dir, args)
+    def __init__(self, batches_per_epoch, args=args):
+        super().__init__(batches_per_epoch, args)
 
 
 
@@ -312,7 +312,7 @@ if __name__ == '__main__':
             # validation_data=tf_eval_dataset,
             epochs=int(args.num_train_epochs),
             steps_per_epoch=len(train_dataset) // (args.per_device_train_batch_size * n_workers),
-            callbacks=[SavePretrainedCallback(output_dir=args.output_dir), tensorboard_callback],
+            callbacks=[SavePretrainedCallback(batches_per_epoch=batches_per_epoch), tensorboard_callback],
         )
 
     print('end of bert')
