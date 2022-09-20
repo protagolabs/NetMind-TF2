@@ -1,16 +1,10 @@
 import os
 import json
-import time
-import traceback
 import tensorflow as tf
-from  keras.backend import set_session
 import config as c
 from tqdm import tqdm
 import  logging
-from utils.data_utils_mm import train_iterator, test_iterator, cnt
-from utils.eval_utils import cross_entropy_batch, correct_num_batch, l2_loss
-from model.ResNet import ResNet
-from NetmindMixins.Netmind import nmp, NetmindDistributedModel, NetmindOptimizer, NetmindDistributedModel, TensorflowTrainerCallback
+from NetmindMixins.Netmind import  TensorflowTrainerCallback
 import sys
 from arguments import setup_args
 logger = logging.getLogger()

@@ -36,7 +36,13 @@ class SavePretrainedCallback(TensorflowTrainerCallback):
         super().__init__(batches_per_epoch, args)
 
 
+    def get_customize_metrics(self):
+        learning_rate = self.model.optimizer.learning_rate(self.model.optimizer.iterations.numpy())
 
+        learning_rate = tf.keras.backend.get_value(learning_rate)
+        print(f'learning_rate : {learning_rate}')
+        metrics_dict = {"Learning rate": float(learning_rate.numpy)}
+        return metrics_dict
 
 def sample_generator(dataset, tokenizer, mlm_probability=0.15, pad_to_multiple_of=None):
     # time_start = time.time()
