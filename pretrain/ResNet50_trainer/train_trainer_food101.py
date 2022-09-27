@@ -18,6 +18,7 @@ logger.setLevel(logging.INFO)
 args = setup_args()
 
 
+
 if __name__ == '__main__':
 
     if not os.getenv('TF_CONFIG'):

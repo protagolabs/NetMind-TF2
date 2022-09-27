@@ -1,0 +1,35 @@
+2022-07-26 22:32:51,966 INFO    MainThread:34693 [wandb_setup.py:_flush():76] Configure stats pid to 34693
+2022-07-26 22:32:51,966 INFO    MainThread:34693 [wandb_setup.py:_flush():76] Loading settings from /home/xing.di/.config/wandb/settings
+2022-07-26 22:32:51,966 INFO    MainThread:34693 [wandb_setup.py:_flush():76] Loading settings from /home/xing.di/NetMind-TF2/pretrain/ResNet50/wandb/settings
+2022-07-26 22:32:51,966 INFO    MainThread:34693 [wandb_setup.py:_flush():76] Loading settings from environment variables: {}
+2022-07-26 22:32:51,966 INFO    MainThread:34693 [wandb_setup.py:_flush():76] Inferring run settings from compute environment: {'program_relpath': 'pretrain/ResNet50/test_multi_worker.py', 'program': '/home/xing.di/NetMind-TF2/pretrain/ResNet50/test_multi_worker.py'}
+2022-07-26 22:32:51,966 INFO    MainThread:34693 [wandb_setup.py:_flush():76] Applying login settings: {'mode': 'offline'}
+2022-07-26 22:32:51,966 INFO    MainThread:34693 [wandb_init.py:_log_setup():461] Logging user logs to /home/xing.di/NetMind-TF2/pretrain/ResNet50/wandb/offline-run-20220726_223251-2924wj8l/logs/debug.log
+2022-07-26 22:32:51,966 INFO    MainThread:34693 [wandb_init.py:_log_setup():462] Logging internal logs to /home/xing.di/NetMind-TF2/pretrain/ResNet50/wandb/offline-run-20220726_223251-2924wj8l/logs/debug-internal.log
+2022-07-26 22:32:51,966 INFO    MainThread:34693 [wandb_init.py:init():495] calling init triggers
+2022-07-26 22:32:51,966 INFO    MainThread:34693 [wandb_init.py:init():498] wandb.init called with sweep_config: {}
+config: {}
+2022-07-26 22:32:51,967 INFO    MainThread:34693 [wandb_init.py:init():548] starting backend
+2022-07-26 22:32:51,967 INFO    MainThread:34693 [backend.py:_multiprocessing_setup():97] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2022-07-26 22:32:51,969 INFO    MainThread:34693 [backend.py:ensure_launched():217] starting backend process...
+2022-07-26 22:32:51,969 INFO    MainThread:34693 [backend.py:ensure_launched():222] started backend process with pid: 36346
+2022-07-26 22:32:51,970 INFO    MainThread:34693 [wandb_init.py:init():558] backend started and connected
+2022-07-26 22:32:51,973 INFO    MainThread:34693 [wandb_init.py:init():634] updated telemetry
+2022-07-26 22:32:51,979 INFO    MainThread:34693 [wandb_init.py:init():700] starting run threads in backend
+2022-07-26 22:32:54,297 INFO    MainThread:34693 [wandb_run.py:_console_start():1893] atexit reg
+2022-07-26 22:32:54,298 INFO    MainThread:34693 [wandb_run.py:_redirect():1766] redirect: SettingsConsole.REDIRECT
+2022-07-26 22:32:54,299 INFO    MainThread:34693 [wandb_run.py:_redirect():1771] Redirecting console.
+2022-07-26 22:32:54,300 INFO    MainThread:34693 [wandb_run.py:_redirect():1827] Redirects installed.
+2022-07-26 22:32:54,300 INFO    MainThread:34693 [wandb_init.py:init():732] run started, returning control to user process
+2022-07-26 22:32:57,733 INFO    MainThread:34693 [wandb_run.py:_atexit_cleanup():1862] got exitcode: 1
+2022-07-26 22:32:57,734 INFO    MainThread:34693 [wandb_run.py:_restore():1834] restore
+2022-07-26 22:33:01,691 INFO    MainThread:34693 [wandb_run.py:_on_finish():1991] got exit ret: 
+2022-07-26 22:33:01,793 INFO    MainThread:34693 [wandb_run.py:_on_finish():1991] got exit ret: 
+2022-07-26 22:33:01,894 INFO    MainThread:34693 [wandb_run.py:_on_finish():1991] got exit ret: done: true
+exit_result {
+}
+local_info {
+}
+
+2022-07-26 22:33:03,016 INFO    MainThread:34693 [wandb_run.py:_footer_history_summary_info():3099] rendering history
+2022-07-26 22:33:03,016 INFO    MainThread:34693 [wandb_run.py:_footer_history_summary_info():3131] rendering summary

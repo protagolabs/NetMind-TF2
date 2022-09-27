@@ -1,0 +1,150 @@
+epoch:0
+train: cross entropy loss: 5.7419, l2 loss: 0.8005, accuracy: 0.0682
+test: cross entropy loss: 4.1038, l2 loss: 0.8005, accuracy: 0.1873
+epoch:1
+train: cross entropy loss: 4.2089, l2 loss: 0.6886, accuracy: 0.2638
+test: cross entropy loss: 3.0115, l2 loss: 0.6886, accuracy: 0.3502
+epoch:2
+train: cross entropy loss: 3.6266, l2 loss: 0.6726, accuracy: 0.3755
+test: cross entropy loss: 2.6041, l2 loss: 0.6726, accuracy: 0.4369
+epoch:3
+train: cross entropy loss: 3.3730, l2 loss: 0.6928, accuracy: 0.4293
+test: cross entropy loss: 2.4656, l2 loss: 0.6928, accuracy: 0.4615
+epoch:4
+train: cross entropy loss: 3.2274, l2 loss: 0.7175, accuracy: 0.4610
+test: cross entropy loss: 2.1901, l2 loss: 0.7175, accuracy: 0.5038
+epoch:5
+train: cross entropy loss: 3.1332, l2 loss: 0.7421, accuracy: 0.4815
+test: cross entropy loss: 2.1831, l2 loss: 0.7421, accuracy: 0.5104
+epoch:6
+train: cross entropy loss: 3.0716, l2 loss: 0.7659, accuracy: 0.4952
+test: cross entropy loss: 2.1797, l2 loss: 0.7659, accuracy: 0.5176
+epoch:7
+train: cross entropy loss: 3.0093, l2 loss: 0.7786, accuracy: 0.5093
+test: cross entropy loss: 2.0207, l2 loss: 0.7786, accuracy: 0.5461
+epoch:8
+train: cross entropy loss: 2.9646, l2 loss: 0.7894, accuracy: 0.5192
+test: cross entropy loss: 2.0016, l2 loss: 0.7894, accuracy: 0.5436
+epoch:9
+train: cross entropy loss: 2.9268, l2 loss: 0.7961, accuracy: 0.5276
+test: cross entropy loss: 1.9280, l2 loss: 0.7961, accuracy: 0.5553
+epoch:10
+train: cross entropy loss: 2.8945, l2 loss: 0.8010, accuracy: 0.5348
+test: cross entropy loss: 1.9631, l2 loss: 0.8010, accuracy: 0.5526
+epoch:11
+train: cross entropy loss: 2.8689, l2 loss: 0.8060, accuracy: 0.5408
+test: cross entropy loss: 1.8815, l2 loss: 0.8060, accuracy: 0.5702
+epoch:12
+train: cross entropy loss: 2.8367, l2 loss: 0.8009, accuracy: 0.5481
+test: cross entropy loss: 1.9496, l2 loss: 0.8009, accuracy: 0.5653
+epoch:13
+train: cross entropy loss: 2.8072, l2 loss: 0.7994, accuracy: 0.5548
+test: cross entropy loss: 1.8243, l2 loss: 0.7994, accuracy: 0.5851
+epoch:14
+train: cross entropy loss: 2.7851, l2 loss: 0.7967, accuracy: 0.5597
+test: cross entropy loss: 1.8058, l2 loss: 0.7967, accuracy: 0.5887
+epoch:15
+train: cross entropy loss: 2.7593, l2 loss: 0.7924, accuracy: 0.5655
+test: cross entropy loss: 1.7603, l2 loss: 0.7924, accuracy: 0.5976
+epoch:16
+train: cross entropy loss: 2.7371, l2 loss: 0.7858, accuracy: 0.5707
+test: cross entropy loss: 1.7569, l2 loss: 0.7858, accuracy: 0.5995
+epoch:17
+train: cross entropy loss: 2.7145, l2 loss: 0.7798, accuracy: 0.5758
+test: cross entropy loss: 1.7150, l2 loss: 0.7798, accuracy: 0.6034
+epoch:18
+train: cross entropy loss: 2.6919, l2 loss: 0.7733, accuracy: 0.5811
+test: cross entropy loss: 1.7270, l2 loss: 0.7733, accuracy: 0.6022
+epoch:19
+train: cross entropy loss: 2.6685, l2 loss: 0.7642, accuracy: 0.5869
+test: cross entropy loss: 1.6875, l2 loss: 0.7642, accuracy: 0.6106
+epoch:20
+train: cross entropy loss: 2.6464, l2 loss: 0.7549, accuracy: 0.5920
+test: cross entropy loss: 1.6522, l2 loss: 0.7549, accuracy: 0.6215
+epoch:21
+train: cross entropy loss: 2.6221, l2 loss: 0.7437, accuracy: 0.5979
+test: cross entropy loss: 1.6711, l2 loss: 0.7437, accuracy: 0.6168
+epoch:22
+train: cross entropy loss: 2.5994, l2 loss: 0.7335, accuracy: 0.6026
+test: cross entropy loss: 1.6006, l2 loss: 0.7335, accuracy: 0.6265
+epoch:23
+train: cross entropy loss: 2.5730, l2 loss: 0.7210, accuracy: 0.6090
+test: cross entropy loss: 1.6169, l2 loss: 0.7210, accuracy: 0.6273
+epoch:24
+train: cross entropy loss: 2.5490, l2 loss: 0.7084, accuracy: 0.6147
+test: cross entropy loss: 1.6352, l2 loss: 0.7084, accuracy: 0.6279
+epoch:25
+train: cross entropy loss: 2.5235, l2 loss: 0.6953, accuracy: 0.6209
+test: cross entropy loss: 1.5272, l2 loss: 0.6953, accuracy: 0.6461
+epoch:26
+train: cross entropy loss: 2.4977, l2 loss: 0.6809, accuracy: 0.6268
+test: cross entropy loss: 1.5345, l2 loss: 0.6809, accuracy: 0.6478
+epoch:27
+train: cross entropy loss: 2.4700, l2 loss: 0.6663, accuracy: 0.6330
+test: cross entropy loss: 1.5321, l2 loss: 0.6663, accuracy: 0.6503
+epoch:28
+train: cross entropy loss: 2.4439, l2 loss: 0.6513, accuracy: 0.6396
+test: cross entropy loss: 1.5524, l2 loss: 0.6513, accuracy: 0.6485
+epoch:29
+train: cross entropy loss: 2.4149, l2 loss: 0.6354, accuracy: 0.6463
+test: cross entropy loss: 1.5759, l2 loss: 0.6354, accuracy: 0.6389
+epoch:30
+train: cross entropy loss: 2.3845, l2 loss: 0.6193, accuracy: 0.6540
+test: cross entropy loss: 1.4332, l2 loss: 0.6193, accuracy: 0.6700
+epoch:31
+train: cross entropy loss: 2.3537, l2 loss: 0.6020, accuracy: 0.6618
+test: cross entropy loss: 1.4052, l2 loss: 0.6020, accuracy: 0.6781
+epoch:32
+train: cross entropy loss: 2.3232, l2 loss: 0.5851, accuracy: 0.6695
+test: cross entropy loss: 1.3586, l2 loss: 0.5851, accuracy: 0.6855
+epoch:33
+train: cross entropy loss: 2.2913, l2 loss: 0.5679, accuracy: 0.6770
+test: cross entropy loss: 1.3544, l2 loss: 0.5679, accuracy: 0.6851
+epoch:34
+train: cross entropy loss: 2.2578, l2 loss: 0.5504, accuracy: 0.6851
+test: cross entropy loss: 1.2991, l2 loss: 0.5504, accuracy: 0.6967
+epoch:35
+train: cross entropy loss: 2.2219, l2 loss: 0.5326, accuracy: 0.6945
+test: cross entropy loss: 1.2919, l2 loss: 0.5326, accuracy: 0.6999
+epoch:36
+train: cross entropy loss: 2.1883, l2 loss: 0.5149, accuracy: 0.7025
+test: cross entropy loss: 1.2643, l2 loss: 0.5149, accuracy: 0.7040
+epoch:37
+train: cross entropy loss: 2.1507, l2 loss: 0.4977, accuracy: 0.7125
+test: cross entropy loss: 1.2367, l2 loss: 0.4977, accuracy: 0.7118
+epoch:38
+train: cross entropy loss: 2.1134, l2 loss: 0.4810, accuracy: 0.7220
+test: cross entropy loss: 1.2234, l2 loss: 0.4810, accuracy: 0.7177
+epoch:39
+train: cross entropy loss: 2.0732, l2 loss: 0.4650, accuracy: 0.7318
+test: cross entropy loss: 1.1757, l2 loss: 0.4650, accuracy: 0.7245
+epoch:40
+train: cross entropy loss: 2.0334, l2 loss: 0.4502, accuracy: 0.7424
+test: cross entropy loss: 1.1637, l2 loss: 0.4502, accuracy: 0.7309
+epoch:41
+train: cross entropy loss: 1.9948, l2 loss: 0.4367, accuracy: 0.7524
+test: cross entropy loss: 1.1299, l2 loss: 0.4367, accuracy: 0.7354
+epoch:42
+train: cross entropy loss: 1.9559, l2 loss: 0.4247, accuracy: 0.7629
+test: cross entropy loss: 1.1101, l2 loss: 0.4247, accuracy: 0.7431
+epoch:43
+train: cross entropy loss: 1.9196, l2 loss: 0.4147, accuracy: 0.7727
+test: cross entropy loss: 1.0994, l2 loss: 0.4147, accuracy: 0.7449
+epoch:44
+train: cross entropy loss: 1.8865, l2 loss: 0.4067, accuracy: 0.7817
+test: cross entropy loss: 1.0746, l2 loss: 0.4067, accuracy: 0.7501
+epoch:45
+train: cross entropy loss: 1.8559, l2 loss: 0.4008, accuracy: 0.7904
+test: cross entropy loss: 1.0676, l2 loss: 0.4008, accuracy: 0.7522
+epoch:46
+train: cross entropy loss: 1.8314, l2 loss: 0.3969, accuracy: 0.7972
+test: cross entropy loss: 1.0594, l2 loss: 0.3969, accuracy: 0.7549
+epoch:47
+train: cross entropy loss: 1.8118, l2 loss: 0.3948, accuracy: 0.8025
+test: cross entropy loss: 1.0587, l2 loss: 0.3948, accuracy: 0.7560
+epoch:48
+train: cross entropy loss: 1.8009, l2 loss: 0.3940, accuracy: 0.8057
+test: cross entropy loss: 1.0562, l2 loss: 0.3940, accuracy: 0.7568
+epoch:49
+train: cross entropy loss: 1.7950, l2 loss: 0.3938, accuracy: 0.8076
+test: cross entropy loss: 1.0514, l2 loss: 0.3938, accuracy: 0.7572
