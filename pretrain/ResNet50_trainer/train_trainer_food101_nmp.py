@@ -131,13 +131,13 @@ if __name__ == '__main__':
         save_freq="epoch",
     )
 
-    train_batches_per_epoch = train_num // global_batch_size
+    batches_per_epoch = train_num // global_batch_size
     history = model.fit(
         train_data_iterator,
         validation_data=test_data_iterator,
-        steps_per_epoch= train_batches_per_epoch,
+        steps_per_epoch= batches_per_epoch,
         validation_steps= test_num // global_batch_size ,
         epochs=args.num_train_epochs,
-        callbacks=[SavePretrainedCallback(batches_per_epoch=train_batches_per_epoch), tensorboard_callback]
+        callbacks=[SavePretrainedCallback(batches_per_epoch=batches_per_epoch), tensorboard_callback]
     )
 
