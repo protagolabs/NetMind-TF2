@@ -1,32 +1,6 @@
 import os
-print('set env ......')
+
 import time
-print('sleeping ......')
-
-#time.sleep(10)
-#os.system("export DEBIAN_FRONTEND=noninteractive")
-#os.system("export TZ=Asia/Shanghai")
-os.environ['DEBIAN_FRONTEND'] = "noninteractive"
-os.environ['TZ'] = "Asia/Shanghai"
-
-DEBIAN_FRONTEND = os.getenv("DEBIAN_FRONTEND", "deb_empty")
-TZ = os.getenv("TZ", "tz_empty")
-
-print(f" $DEBIAN_FRONTEND : {DEBIAN_FRONTEND} tz : {TZ}")
-os.system("echo $DEBIAN_FRONTEND")
-os.system("echo $TZ")
-print(f'*'*30)
-
-
-
-print('install package done')
-str_install = "pip install opencv-python  numpy tqdm config opencv-python-headless \
-protobuf==3.19.0 transformers datasets pydantic matplotlib tensorboard \
-wandb boto3 retry"
-os.system(str_install)
-os.system("apt-get install  libgl1  libglib2.0-dev -y")
-
-
 import json
 import time
 import tensorflow as tf
