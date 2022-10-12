@@ -12,8 +12,8 @@ export MONITOR=wandb
 echo $PYTHONPATH
 export  ROLE=master
 export INDEX=0
-export TIME_ESTIMATE_PROCESS=1
-export TIME_ESTIMATE_BATCH=20
+#export TIME_ESTIMATE_PROCESS=1
+#export TIME_ESTIMATE_BATCH=20
 export DATA_LOCATION=/data/food-101/sub_images
 entry_point=train_trainer_food101_nmp.py
 train_num=1300
@@ -24,6 +24,7 @@ CUDA_VISIBLE_DEVICES="0" python $entry_point \
                           --per_device_train_batch_size=80 \
                           --learning_rate=0.05  \
                           --num_train_epochs=2  \
+                          --save_steps=20 \
                           --model_name_or_path=empty
 
 

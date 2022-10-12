@@ -15,6 +15,7 @@ def setup_args():
     #param below belong to resnet50 trainer
     parser.add_argument("--learning_rate", default=0.05, type=float)
     parser.add_argument("--num_train_epochs", default=10, type=int)
+    parser.add_argument("--save_steps", default=100, type=int)
     parser.add_argument('--per_device_train_batch_size', default=100, type=int, required=False, help='')
 
     return parser.parse_args()

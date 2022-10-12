@@ -11,6 +11,7 @@ def setup_args():
 
 
     #bert base
+    parser.add_argument("--save_steps", default=100, type=int)
     parser.add_argument("--num_train_epochs", default=6, type=int)
     parser.add_argument('--per_device_train_batch_size', default=16, type=int, required=False, help='')
     parser.add_argument("--learning_rate", default=0.0001, type=float)

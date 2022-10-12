@@ -11,6 +11,7 @@ from functools import partial
 from transformers import AutoTokenizer, AutoConfig
 from transformers import create_optimizer, TFAutoModelForMaskedLM, AdamWeightDecay
 from arguments import setup_args
+from NetmindMixins.Netmind import TensorflowTrainerCallback
 
 args = setup_args()
 

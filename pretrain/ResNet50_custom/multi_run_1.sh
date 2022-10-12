@@ -11,7 +11,7 @@ export INDEX=1
 export TIME_ESTIMATE_PROCESS=1
 export TIME_ESTIMATE_BATCH=20
 export DATA_LOCATION=/data/resnet50/extract
-CUDA_VISIBLE_DEVICES="1" python test_multi_worker.py  \
+CUDA_VISIBLE_DEVICES="1" python train_netmind.py  \
                           --per_device_train_batch_size=100  --label_smoothing=0.1 --train_num=1300 \
                           --test_num=100 --learning_rate=0.05 --minimum_learning_rate=0.0001 \
                           --save_steps=2  --num_train_epochs=2  \

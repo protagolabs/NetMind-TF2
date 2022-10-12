@@ -11,6 +11,7 @@ def setup_args():
 
 
     #roberta
+    parser.add_argument("--save_steps", default=20, type=int)
     parser.add_argument("--num_train_epochs", default=5, type=int)
     parser.add_argument('--per_device_train_batch_size', default=16, type=int, required=False, help='')
 
