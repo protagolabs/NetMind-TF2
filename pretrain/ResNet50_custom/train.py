@@ -92,7 +92,7 @@ def test_step(dist_inputs):
 
 def set_input_shape(img, label):
     img = img.set_shape(c.input_shape)
-    label = label.set_shape([args.category_num])
+    label = label.set_shape([c.category_num])
     return img, label
 
 
