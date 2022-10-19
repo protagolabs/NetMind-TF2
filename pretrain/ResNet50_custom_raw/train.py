@@ -107,8 +107,8 @@ if __name__ == '__main__':
     multi_worker_mirrored_strategy = tf.distribute.MultiWorkerMirroredStrategy()
 
     n_workers = len(json.loads(os.environ['TF_CONFIG']).get('cluster', {}).get('worker'))
-    global_batch_size = args.per_device_train_batch_size * n_workers
-
+    train_global_batch_size = args.per_device_train_batch_size * n_workers
+    eval_global_bacth_size = args.per_device_eval_batch_size * n_workers
     # First, we create the model and optimizer inside the strategy's scope. This ensures that any variables created with the model and optimizer are mirrored variables.
 
     with multi_worker_mirrored_strategy.scope():
@@ -119,7 +119,7 @@ if __name__ == '__main__':
         inputs = tf.keras.Input(shape=c.input_shape)
 
         # iterations_per_epoch = int(args.train_num / args.per_device_train_batch_size)
-        iterations_per_epoch = int(args.train_num / global_batch_size)
+        iterations_per_epoch = int(args.train_num / train_global_batch_size)
         warm_iterations = iterations_per_epoch
         # here we automatically change the iterations per epoch based on number of gpus
         learning_rate_schedules = CosineDecayWithWarmUP(initial_learning_rate=args.learning_rate * n_workers,
@@ -134,23 +134,17 @@ if __name__ == '__main__':
 
         # Next, we create the input dataset and call `tf.distribute.Strategy.experimental_distribute_dataset` to distribute the dataset based on the strategy.
 
-        # dataset = train_iterator().batch(global_batch_size)
-        # train_data_iterator = multi_worker_mirrored_strategy.experimental_distribute_dataset(dataset)
-        # for inputs in train_data_iterator:
-        #    logger.info(train_step(inputs))
-        #    # train_step(inputs)
-        # train_iterator = train_iterator.map(set_input_shape)
         train_data_path = args.data + "/train"
 
         train_list_path = args.train_list_path
         dataset_train = train_iterator(list_path=train_list_path, train_data_path=train_data_path).batch(
-            global_batch_size)
+            train_global_batch_size)
         train_data_iterator = iter(multi_worker_mirrored_strategy.experimental_distribute_dataset(dataset_train))
 
         #  eval
         test_data_path = args.data + "/val"
         test_list_path = args.test_list_path
-        dataset_eval = test_iterator(list_path=test_list_path, test_data_path=test_data_path).batch(global_batch_size)
+        dataset_eval = test_iterator(list_path=test_list_path, test_data_path=test_data_path).batch(eval_global_bacth_size)
         test_data_iterator = iter(multi_worker_mirrored_strategy.experimental_distribute_dataset(dataset_eval))
 
 
@@ -166,20 +160,17 @@ if __name__ == '__main__':
                 # train
                 sum_ce = 0
                 epoch_begin = time.time()
-                logger.info(f'in one epoch : loop start in range {args.train_num // global_batch_size}')
-                for i in tqdm(range(int(args.train_num // global_batch_size))):
+                logger.info(f'loop start in range {args.train_num // train_global_batch_size}')
+                for i in tqdm(range(int(args.train_num // train_global_batch_size))):
                     # for ds in train_data_iterator:
                     ds = train_data_iterator.get_next()
                     next_cnt += 1
                     loss_ce = train_step(ds)
                     sum_ce += tf.reduce_sum(loss_ce)
                     # netmind relatived
-                    # nmp.step({"loss": loss_ce, "Learning rate": scheduler.get_last_lr()[0]})
                     learing_rate = learning_rate_schedules(i)
-                    print(type(learing_rate.numpy()), learing_rate.numpy(), f'current  epoch : {epoch_num}')
                     final_loss = float((sum_ce / args.train_num).numpy())
                     final_learing_rate = float(learing_rate.numpy())
-                    logger.info(f"loss : {final_loss}, type: {type(final_loss)}")
                     logger.info(f"learing_rate : {final_learing_rate}, type: {type(final_learing_rate)}")
                     logger.info(f'save_pretrained_by_step : {args.save_steps}')
 
@@ -189,15 +180,15 @@ if __name__ == '__main__':
                 # validate
                 sum_ce = 0
                 sum_correct_num = 0
-                for i in tqdm(range(int(args.test_num // global_batch_size))):
+                for i in tqdm(range(int(args.test_num // eval_global_bacth_size))):
                     ds = test_data_iterator.get_next()
                     ce, correct_num = test_step(ds)
                     sum_ce += tf.reduce_sum(ce)
                     sum_correct_num += tf.reduce_sum(correct_num)
-                eval_ce = sum_ce / args.test_num
-                eval_accuracy = sum_correct_num / args.test_num
-                logger.info(
-                    f' mean ce : {eval_ce} type: {type(eval_ce)}, mean correct :{eval_accuracy} type: {type(eval_accuracy)}')
+
+                eval_ce = float((sum_ce / args.test_num).numpy())
+                eval_accuracy = float((sum_correct_num / args.test_num).numpy())
+
                 logger.info('test: cross entropy loss: {:.4f}, accuracy: {:.4f}\n'.format(eval_ce, eval_accuracy))
                 f.write('test: cross entropy loss: {:.4f}, accuracy: {:.4f}\n'.format(eval_ce, eval_accuracy))
 
